@@ -1,55 +1,48 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable, useColorScheme } from 'react-native';
+// External Dependencies
+import { Tabs, useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
-import Colors from '../../constants/Colors';
-
-/**
- * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
- */
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+const TabsLayout = () => {
+  const router = useRouter();
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-      }}>
+    <Tabs>
       <Tabs.Screen
-        name="index"
+        name="diary"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
+          headerShown: false,
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name="calendar-outline" color={color} size={size} />
           ),
+          tabBarLabel: "Diary",
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="addMeal"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="add-outline" color={color} size={size} />
+          ),
+          tabBarLabel: "Add Meal",
+        }}
+        listeners={() => ({
+          tabPress: (e: any) => {
+            e.preventDefault();
+            router.push("/(modals)/addMeal");
+          },
+        })}
+      />
+      <Tabs.Screen
+        name="insights"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="stats-chart-outline" color={color} size={size} />
+          ),
+          tabBarLabel: "Insights",
         }}
       />
     </Tabs>
   );
-}
+};
+
+export default TabsLayout;
