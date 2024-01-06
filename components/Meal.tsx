@@ -11,10 +11,10 @@ import {
 import { useState } from "react";
 
 interface MealProps {
-  type?: string;
-  notes?: string;
-  date: Date;
-  imageLink?: string;
+  type: string | null;
+  notes: string | null;
+  datetime: Date;
+  imageUrls: string[];
 }
 
 interface ImageSize {
@@ -22,7 +22,7 @@ interface ImageSize {
   height: number;
 }
 
-const Meal = ({ type, notes, date, imageLink }: MealProps) => {
+const Meal = ({ type, notes, datetime, imageUrls }: MealProps) => {
   const [showReadMore, setShowReadMore] = useState<boolean | undefined>(
     undefined
   );
@@ -31,8 +31,8 @@ const Meal = ({ type, notes, date, imageLink }: MealProps) => {
   const [imageSize, setImageSize] = useState<ImageSize | null>(null);
 
   const getMealTime = () => {
-    let hours = date.getHours();
-    const minutes = date.getMinutes();
+    let hours = datetime.getHours();
+    const minutes = datetime.getMinutes();
     const ampm = hours >= 12 ? "pm" : "am";
     hours = hours % 12;
     hours = hours ? hours : 12;
@@ -75,7 +75,7 @@ const Meal = ({ type, notes, date, imageLink }: MealProps) => {
   };
 
   return (
-    <View className="flex flex-row rounded-lg bg-white shadow-md">
+    <View className="mt-4 flex flex-row rounded-lg bg-white shadow-md">
       <View className="w-4/6 flex-col p-2">
         <View className="flex flex-row items-center pl-3">
           <Text className="flex-shrink text-lg font-semibold">
@@ -102,10 +102,10 @@ const Meal = ({ type, notes, date, imageLink }: MealProps) => {
           )}
         </View>
       </View>
-      {imageLink !== undefined && (
+      {imageUrls?.length && (
         <View className="flex flex-1 items-center p-4">
           <Image
-            source={{ uri: imageLink }}
+            source={{ uri: imageUrls[0] }}
             className="h-20 w-20 rounded-sm"
             resizeMode="cover"
             onLayout={onImageLayout}

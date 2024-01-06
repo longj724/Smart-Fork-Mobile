@@ -4,18 +4,41 @@ import { View, Text, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useAuth } from "@clerk/clerk-expo";
+import moment from "moment";
 
 // Relative Dependencies
 import Meal from "@/components/Meal";
-
-const sampleData = {
-  date: new Date(),
-  notes:
-    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
-  type: "Breakfast",
-};
+import { MealData } from "../types/types";
 
 const Page = () => {
+  const { userId, getToken } = useAuth();
+
+  const { data } = useQuery({
+    queryFn: async (): Promise<MealData[]> => {
+      const supabaseAccessToken = await getToken({
+        template: "supabase",
+      });
+
+      if (userId) {
+        const { data } = await axios.get(
+          `http://localhost:3000/meals/all-meals/${userId}`,
+          {
+            headers: {
+              Authorization: supabaseAccessToken,
+            },
+          }
+        );
+        return data;
+      }
+      return [];
+    },
+    enabled: userId !== undefined,
+    queryKey: ["allMeals", userId],
+  });
+
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [monthInView, setMonthInView] = useState(new Date().getMonth());
@@ -92,12 +115,17 @@ const Page = () => {
         />
       )}
       <View className="container p-4">
-        <Meal
-          date={sampleData.date}
-          notes={sampleData.notes}
-          type={sampleData.type}
-          imageLink="https://picsum.photos/200/300"
-        />
+        {data?.map((meal: MealData) => {
+          return (
+            <Meal
+              key={meal.datetime.toString()}
+              datetime={moment(meal.datetime).toDate()}
+              notes={meal?.notes}
+              type={meal.type}
+              imageUrls={meal.imageUrls ?? []}
+            />
+          );
+        })}
       </View>
     </SafeAreaView>
   );

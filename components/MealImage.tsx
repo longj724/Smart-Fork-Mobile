@@ -14,7 +14,7 @@ const MealImage = ({ imageInfo, deleteImage }: MealImageProps) => {
       <Image
         source={{ uri: imageInfo.uri }}
         resizeMode="cover"
-        className="h-20 w-20"
+        className="h-20 w-20 rounded-md"
       />
       <Pressable
         className="absolute top-0 right-0 flex items-center justify-center rounded-3xl bg-gray-400"

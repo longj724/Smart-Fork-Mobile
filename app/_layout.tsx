@@ -7,7 +7,7 @@ import * as SecureStore from "expo-secure-store";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Relative Dependencies
 
@@ -121,11 +121,6 @@ function RootLayoutNav() {
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
               <Text>Cancel</Text>
-            </TouchableOpacity>
-          ),
-          headerRight: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Text>Add</Text>
             </TouchableOpacity>
           ),
           headerTitle: "Add Meal",
