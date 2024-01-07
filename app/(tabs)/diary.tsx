@@ -1,6 +1,6 @@
 // External Dependencies
 import { Ionicons } from "@expo/vector-icons";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -16,6 +16,10 @@ import { MealData } from "../types/types";
 const Page = () => {
   const { userId, getToken } = useAuth();
 
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [monthInView, setMonthInView] = useState(new Date().getMonth());
+
   const { data } = useQuery({
     queryFn: async (): Promise<MealData[]> => {
       const supabaseAccessToken = await getToken({
@@ -24,7 +28,7 @@ const Page = () => {
 
       if (userId) {
         const { data } = await axios.get(
-          `http://localhost:3000/meals/all-meals/${userId}`,
+          `http://localhost:3000/meals/all-meals/${userId}?datetime=${selectedDate.toISOString()}`,
           {
             headers: {
               Authorization: supabaseAccessToken,
@@ -38,10 +42,6 @@ const Page = () => {
     enabled: userId !== undefined,
     queryKey: ["allMeals", userId],
   });
-
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [monthInView, setMonthInView] = useState(new Date().getMonth());
 
   const toggleDatePicker = () => {
     setShowDatePicker(!showDatePicker);
@@ -114,7 +114,7 @@ const Page = () => {
           }}
         />
       )}
-      <View className="container p-4">
+      <ScrollView className="container p-4">
         {data?.map((meal: MealData) => {
           return (
             <Meal
@@ -122,11 +122,11 @@ const Page = () => {
               datetime={moment(meal.datetime).toDate()}
               notes={meal?.notes}
               type={meal.type}
-              imageUrls={meal.imageUrls ?? []}
+              imageUrls={["https://picsum.photos/200"]} // Shoudl be meal.imageUrls ?? []
             />
           );
         })}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
