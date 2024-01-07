@@ -2,7 +2,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { View, Text, Pressable, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -19,8 +19,9 @@ const Page = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [monthInView, setMonthInView] = useState(new Date().getMonth());
+  const prevSelectedDateRef = useRef(selectedDate);
 
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryFn: async (): Promise<MealData[]> => {
       const supabaseAccessToken = await getToken({
         template: "supabase",
@@ -42,6 +43,13 @@ const Page = () => {
     enabled: userId !== undefined,
     queryKey: ["allMeals", userId],
   });
+
+  useEffect(() => {
+    if (prevSelectedDateRef.current.getMonth() !== selectedDate.getMonth()) {
+      refetch();
+    }
+    prevSelectedDateRef.current = selectedDate;
+  }, [selectedDate]);
 
   const toggleDatePicker = () => {
     setShowDatePicker(!showDatePicker);
@@ -115,17 +123,22 @@ const Page = () => {
         />
       )}
       <ScrollView className="container p-4">
-        {data?.map((meal: MealData) => {
-          return (
-            <Meal
-              key={meal.datetime.toString()}
-              datetime={moment(meal.datetime).toDate()}
-              notes={meal?.notes}
-              type={meal.type}
-              imageUrls={["https://picsum.photos/200"]} // Shoudl be meal.imageUrls ?? []
-            />
-          );
-        })}
+        {data
+          ?.filter(
+            ({ datetime }: MealData) =>
+              new Date(datetime).getDate() == selectedDate.getDate()
+          )
+          .map((meal: MealData) => {
+            return (
+              <Meal
+                key={meal.datetime.toString()}
+                datetime={moment(meal.datetime).toDate()}
+                notes={meal?.notes}
+                type={meal.type}
+                imageUrls={["https://picsum.photos/200"]} // Shoudl be meal.imageUrls ?? []
+              />
+            );
+          })}
       </ScrollView>
     </SafeAreaView>
   );
