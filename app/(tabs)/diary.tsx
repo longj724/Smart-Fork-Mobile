@@ -1,13 +1,21 @@
 // External Dependencies
 import { Ionicons } from "@expo/vector-icons";
-import { View, Text, Pressable, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  ScrollView,
+  Modal,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useRef, useState } from "react";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-expo";
 import moment from "moment";
+import DatePicker from "react-native-modern-datepicker";
 
 // Relative Dependencies
 import Meal from "@/components/Meal";
@@ -18,7 +26,6 @@ const Page = () => {
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [monthInView, setMonthInView] = useState(new Date().getMonth());
   const prevSelectedDateRef = useRef(selectedDate);
 
   const { data, refetch } = useQuery({
@@ -107,22 +114,32 @@ const Page = () => {
       </View>
 
       {showDatePicker && (
-        // TODO: This currently doesn't work with the arrows on the calendar
-        <DateTimePicker
-          mode="date"
-          display="inline"
-          value={selectedDate}
-          onChange={(event, newDate) => {
-            if (event.type === "set" && monthInView !== newDate?.getMonth()) {
-              setMonthInView(newDate?.getMonth() as number);
-            } else if (event.type === "set") {
-              setShowDatePicker(false);
-              setSelectedDate(newDate as Date);
-            }
-          }}
-        />
+        <Modal transparent={true} animationType="fade" visible={showDatePicker}>
+          <TouchableWithoutFeedback onPress={() => setShowDatePicker(false)}>
+            <View className="flex-1 justify-center">
+              <View style={styles.calendar}>
+                <DatePicker
+                  options={{}}
+                  mode="calendar"
+                  current={selectedDate.toISOString()}
+                  selected={selectedDate.toISOString()}
+                  onDateChange={(dateString: string) => {
+                    const dateObj = new Date(
+                      `${dateString.replaceAll("/", "-")}T12:00:00`
+                    );
+
+                    setTimeout(() => {
+                      setSelectedDate(dateObj);
+                      setShowDatePicker(false);
+                    }, 500);
+                  }}
+                />
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
       )}
-      <ScrollView className="container p-4">
+      <ScrollView className="pl-4 pr-4 pb-20">
         {data
           ?.filter(
             ({ datetime }: MealData) =>
@@ -135,13 +152,31 @@ const Page = () => {
                 datetime={moment(meal.datetime).toDate()}
                 notes={meal?.notes}
                 type={meal.type}
-                imageUrls={["https://picsum.photos/200"]} // Shoudl be meal.imageUrls ?? []
+                imageUrls={["https://picsum.photos/200"]} // Should be meal.imageUrls ?? []
               />
             );
           })}
+        <View className="h-10"></View>
       </ScrollView>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  calendar: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+});
 
 export default Page;
