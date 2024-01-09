@@ -1,8 +1,16 @@
 // External Dependencies
-import { FlatList, Pressable, Text, TextInput, View } from "react-native";
+import {
+  Animated,
+  FlatList,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useAuth } from "@clerk/clerk-expo";
 import axios from "axios";
@@ -13,6 +21,11 @@ import moment from "moment";
 
 // Relative Dependencies
 import MealImage from "@/components/MealImage";
+
+interface MealTypeData {
+  key: string;
+  value: string;
+}
 
 const Page = () => {
   const { getToken, userId } = useAuth();
@@ -46,6 +59,14 @@ const Page = () => {
   const [selectedImages, setSelectedImages] = useState<
     ImagePicker.ImagePickerAsset[] | null
   >(null);
+  const [showMealTypeDropdown, setShowMealTypeDropdown] = useState(false);
+  const [selectedMealType, setSelectedMealType] = useState("Breakfast");
+  const mealTypeData: MealTypeData[] = [
+    { key: "1", value: "Breakfast" },
+    { key: "2", value: "Lunch" },
+    { key: "3", value: "Dinner" },
+    { key: "4", value: "Snack" },
+  ];
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
@@ -92,7 +113,7 @@ const Page = () => {
 
       formData.append("notes", mealNotes);
       formData.append("date", JSON.stringify(moment(date).format()));
-      formData.append("type", "Breakfast");
+      formData.append("type", selectedMealType);
       formData.append("userId", userId);
 
       addMealRequest(formData);
@@ -100,6 +121,15 @@ const Page = () => {
       return;
     }
     router.back();
+  };
+
+  const animatedvalue = useRef(new Animated.Value(0)).current;
+  const slideup = () => {
+    Animated.timing(animatedvalue, {
+      toValue: 0,
+      duration: 100,
+      useNativeDriver: false,
+    }).start(() => setShowMealTypeDropdown(false));
   };
 
   return (
@@ -170,6 +200,39 @@ const Page = () => {
             onCancel={() => setShowPicker(false)}
           />
         </Pressable>
+      </View>
+      <View className="border-black-500 mt-8 rounded-md border-2">
+        <Pressable
+          onPress={() => setShowMealTypeDropdown(!showMealTypeDropdown)}
+        >
+          <View className="flex w-full flex-row items-center justify-between p-2">
+            <Ionicons name="fast-food-outline" size={20} />
+            <Text className="justify-self-start align-self">
+              {selectedMealType}
+            </Text>
+            <Ionicons name="chevron-down-outline" size={20} />
+          </View>
+        </Pressable>
+        {showMealTypeDropdown && (
+          <Animated.View>
+            <ScrollView nestedScrollEnabled={true}>
+              {mealTypeData
+                .filter(({ value }: MealTypeData) => value !== selectedMealType)
+                .map(({ key, value }: MealTypeData, index: number) => (
+                  <Pressable
+                    className="flex flex-row justify-center p-2"
+                    key={key}
+                    onPress={() => {
+                      setSelectedMealType(value);
+                      slideup();
+                    }}
+                  >
+                    <Text>{value}</Text>
+                  </Pressable>
+                ))}
+            </ScrollView>
+          </Animated.View>
+        )}
       </View>
       <View className="mt-10">
         <Pressable
