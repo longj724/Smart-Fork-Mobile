@@ -8,13 +8,14 @@ const TabsLayout = () => {
   return (
     <Tabs>
       <Tabs.Screen
-        name="diary"
+        name="log"
         options={{
           headerShown: false,
           tabBarIcon: ({ size, color }) => (
             <Ionicons name="calendar-outline" color={color} size={size} />
           ),
-          tabBarLabel: "Diary",
+          tabBarLabel: "Log",
+          tabBarActiveTintColor: "#000",
         }}
       />
       <Tabs.Screen

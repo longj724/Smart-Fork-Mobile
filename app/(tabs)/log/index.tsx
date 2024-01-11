@@ -19,7 +19,7 @@ import DatePicker from "react-native-modern-datepicker";
 
 // Relative Dependencies
 import Meal from "@/components/Meal";
-import { MealData } from "../types/types";
+import { MealData } from "../../types/types";
 
 const Page = () => {
   const { userId, getToken } = useAuth();
@@ -87,28 +87,28 @@ const Page = () => {
 
   return (
     <SafeAreaView>
-      <View className="flex h-16 flex-row items-center justify-center bg-green-400">
+      <View className="flex h-16 flex-row items-center justify-center bg-green-700">
         <View className="flex w-full flex-row justify-center gap-2">
           <Pressable
-            className="h-8 w-8 items-center justify-center rounded-sm bg-blue-400"
+            className="h-8 w-8 items-center justify-center rounded-sm bg-white"
             onPress={moveBackwardOneDay}
           >
-            <Ionicons name="arrow-back-outline" color="white" size={16} />
+            <Ionicons name="arrow-back-outline" color="black" size={16} />
           </Pressable>
           <Pressable
-            className="flex w-28 flex-row items-center justify-center gap-1 rounded-sm bg-red-500"
+            className="flex w-28 flex-row items-center justify-center gap-1 rounded-sm bg-white"
             onPress={toggleDatePicker}
           >
-            <Text className="font-semibold text-white">
+            <Text className="font-semibold text-black">
               {displayDayInHeader()}
             </Text>
-            <Ionicons name="caret-down-outline" color="white" />
+            <Ionicons name="caret-down-outline" color="black" />
           </Pressable>
           <Pressable
-            className="h-8 w-8 items-center justify-center rounded-sm bg-blue-400"
+            className="h-8 w-8 items-center justify-center rounded-sm bg-white"
             onPress={moveForwardOneDay}
           >
-            <Ionicons name="arrow-forward-outline" color="white" size={16} />
+            <Ionicons name="arrow-forward-outline" color="black" size={16} />
           </Pressable>
         </View>
       </View>
@@ -148,6 +148,7 @@ const Page = () => {
           .map((meal: MealData) => {
             return (
               <Meal
+                id={meal.id.toString()}
                 key={meal.datetime.toString()}
                 datetime={moment(meal.datetime).toDate()}
                 notes={meal?.notes}

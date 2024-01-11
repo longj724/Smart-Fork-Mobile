@@ -82,7 +82,7 @@ function RootLayoutNav() {
     if (isLoaded && !isSignedIn) {
       router.push("/(modals)/login");
     } else {
-      router.push("/(tabs)/diary");
+      router.push("/(tabs)/log/");
     }
   }, [isLoaded]);
 

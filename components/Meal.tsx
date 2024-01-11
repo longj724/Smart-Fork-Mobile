@@ -9,12 +9,14 @@ import {
   LayoutChangeEvent,
 } from "react-native";
 import { useState } from "react";
+import { useRouter } from "expo-router";
 
 interface MealProps {
-  type: string | null;
-  notes: string | null;
   datetime: Date;
+  id: string;
   imageUrls: string[];
+  notes: string | null;
+  type: string | null;
 }
 
 interface ImageSize {
@@ -22,7 +24,9 @@ interface ImageSize {
   height: number;
 }
 
-const Meal = ({ type, notes, datetime, imageUrls }: MealProps) => {
+const Meal = ({ datetime, id, imageUrls, notes, type }: MealProps) => {
+  const router = useRouter();
+
   const [showReadMore, setShowReadMore] = useState<boolean | undefined>(
     undefined
   );
@@ -75,44 +79,46 @@ const Meal = ({ type, notes, datetime, imageUrls }: MealProps) => {
   };
 
   return (
-    <View className="mt-4 flex flex-row rounded-lg bg-white shadow-md">
-      <View className="w-4/6 flex-col p-2">
-        <View className="flex flex-row items-center pl-3">
-          <Text className="flex-shrink text-lg font-semibold">
-            {getMealTime()} - {type}
-          </Text>
+    <Pressable onPress={() => router.push(`/log/${id}`)}>
+      <View className="mt-4 flex flex-row rounded-lg bg-white shadow-md">
+        <View className="w-4/6 flex-col p-2">
+          <View className="flex flex-row items-center pl-3">
+            <Text className="flex-shrink text-lg font-semibold">
+              {getMealTime()} - {type}
+            </Text>
+          </View>
+          <View className="ml-3 mt-2 flex flex-col">
+            <Text
+              numberOfLines={numberOfLines !== null ? numberOfLines : undefined}
+              ellipsizeMode="tail"
+              onTextLayout={onNotesTextLayout}
+            >
+              {notes}
+            </Text>
+            {showReadMore && (
+              <Pressable onPress={onShowReadMore} className="mt-2">
+                <Text className="font-semibold">Read more</Text>
+              </Pressable>
+            )}
+            {showReadLess && (
+              <Pressable onPress={onShowReadLess} className="mt-2">
+                <Text className="font-semibold">Read less</Text>
+              </Pressable>
+            )}
+          </View>
         </View>
-        <View className="ml-3 mt-2 flex flex-col">
-          <Text
-            numberOfLines={numberOfLines !== null ? numberOfLines : undefined}
-            ellipsizeMode="tail"
-            onTextLayout={onNotesTextLayout}
-          >
-            {notes}
-          </Text>
-          {showReadMore && (
-            <Pressable onPress={onShowReadMore} className="mt-2">
-              <Text className="font-semibold">Read more</Text>
-            </Pressable>
-          )}
-          {showReadLess && (
-            <Pressable onPress={onShowReadLess} className="mt-2">
-              <Text className="font-semibold">Read less</Text>
-            </Pressable>
-          )}
-        </View>
+        {imageUrls?.length && (
+          <View className="flex flex-1 items-center p-4">
+            <Image
+              source={{ uri: imageUrls[0] }}
+              className="h-20 w-20 rounded-sm"
+              resizeMode="cover"
+              onLayout={onImageLayout}
+            />
+          </View>
+        )}
       </View>
-      {imageUrls?.length && (
-        <View className="flex flex-1 items-center p-4">
-          <Image
-            source={{ uri: imageUrls[0] }}
-            className="h-20 w-20 rounded-sm"
-            resizeMode="cover"
-            onLayout={onImageLayout}
-          />
-        </View>
-      )}
-    </View>
+    </Pressable>
   );
 };
 
