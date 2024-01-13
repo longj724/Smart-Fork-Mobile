@@ -1,13 +1,13 @@
 // External Dependencies
 import { Ionicons } from "@expo/vector-icons";
 import {
-  View,
-  Text,
+  Modal,
   Pressable,
   ScrollView,
-  Modal,
   StyleSheet,
+  Text,
   TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useRef, useState } from "react";
@@ -48,7 +48,7 @@ const Page = () => {
       return [];
     },
     enabled: userId !== undefined,
-    queryKey: ["allMeals", userId],
+    queryKey: ["allMeals", userId, selectedDate.getMonth()],
   });
 
   useEffect(() => {
@@ -144,6 +144,11 @@ const Page = () => {
           ?.filter(
             ({ datetime }: MealData) =>
               new Date(datetime).getDate() == selectedDate.getDate()
+          )
+          .sort(
+            (meal1: MealData, meal2: MealData) =>
+              new Date(meal1.datetime).getTime() -
+              new Date(meal2.datetime).getTime()
           )
           .map((meal: MealData) => {
             return (
