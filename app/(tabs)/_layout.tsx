@@ -40,6 +40,8 @@ const TabsLayout = () => {
             <Ionicons name="stats-chart-outline" color={color} size={size} />
           ),
           tabBarLabel: "Insights",
+          tabBarActiveTintColor: "#000",
+          headerTitle: "Insights",
         }}
       />
     </Tabs>

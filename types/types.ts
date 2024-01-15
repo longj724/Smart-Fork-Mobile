@@ -7,3 +7,8 @@ export interface MealData {
   type: string | null;
   userId: string;
 }
+
+export interface IMealTypeSelectData {
+  key: string;
+  value: string;
+}

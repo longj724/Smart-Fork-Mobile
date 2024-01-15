@@ -79,7 +79,20 @@ const Meal = ({ datetime, id, imageUrls, notes, type }: MealProps) => {
   };
 
   return (
-    <Pressable onPress={() => router.push(`/log/${id}`)}>
+    <Pressable
+      onPress={() =>
+        router.push({
+          pathname: `/log/${id}`,
+          params: {
+            datetime: datetime.toISOString(),
+            id,
+            imageUrls,
+            notes: notes ?? "",
+            type: type ?? "",
+          },
+        })
+      }
+    >
       <View className="mt-4 flex flex-row rounded-lg bg-white shadow-md">
         <View className="w-4/6 flex-col p-2">
           <View className="flex flex-row items-center pl-3">

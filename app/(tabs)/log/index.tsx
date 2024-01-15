@@ -19,7 +19,7 @@ import DatePicker from "react-native-modern-datepicker";
 
 // Relative Dependencies
 import Meal from "@/components/Meal";
-import { MealData } from "../../types/types";
+import { MealData } from "../../../types/types";
 
 const Page = () => {
   const { userId, getToken } = useAuth();
@@ -158,7 +158,10 @@ const Page = () => {
                 datetime={moment(meal.datetime).toDate()}
                 notes={meal?.notes}
                 type={meal.type}
-                imageUrls={["https://picsum.photos/200"]} // Should be meal.imageUrls ?? []
+                imageUrls={[
+                  "https://picsum.photos/200",
+                  "https://picsum.photos/id/237/200/300",
+                ]} // Should be meal.imageUrls ?? []
               />
             );
           })}

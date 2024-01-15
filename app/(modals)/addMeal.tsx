@@ -21,11 +21,8 @@ import moment from "moment";
 
 // Relative Dependencies
 import MealImage from "@/components/MealImage";
-
-interface MealTypeData {
-  key: string;
-  value: string;
-}
+import { IMealTypeSelectData } from "@/types/types";
+import { mealTypeSelectData } from "@/utils/utils";
 
 const Page = () => {
   const { getToken, userId } = useAuth();
@@ -61,12 +58,6 @@ const Page = () => {
   >(null);
   const [showMealTypeDropdown, setShowMealTypeDropdown] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState("Breakfast");
-  const mealTypeData: MealTypeData[] = [
-    { key: "1", value: "Breakfast" },
-    { key: "2", value: "Lunch" },
-    { key: "3", value: "Dinner" },
-    { key: "4", value: "Snack" },
-  ];
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
@@ -216,9 +207,11 @@ const Page = () => {
         {showMealTypeDropdown && (
           <Animated.View>
             <ScrollView nestedScrollEnabled={true}>
-              {mealTypeData
-                .filter(({ value }: MealTypeData) => value !== selectedMealType)
-                .map(({ key, value }: MealTypeData, index: number) => (
+              {mealTypeSelectData
+                .filter(
+                  ({ value }: IMealTypeSelectData) => value !== selectedMealType
+                )
+                .map(({ key, value }: IMealTypeSelectData, index: number) => (
                   <Pressable
                     className="flex flex-row justify-center p-2"
                     key={key}
