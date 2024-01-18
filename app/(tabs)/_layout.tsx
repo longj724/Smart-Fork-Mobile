@@ -22,9 +22,9 @@ const TabsLayout = () => {
         name="addMeal"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-outline" color={color} size={size} />
+            <Ionicons name="pencil-outline" color={color} size={size} />
           ),
-          tabBarLabel: "Add Meal",
+          tabBarLabel: "Log Meal",
         }}
         listeners={() => ({
           tabPress: (e: any) => {
@@ -32,6 +32,17 @@ const TabsLayout = () => {
             router.push("/(modals)/addMeal");
           },
         })}
+      />
+      <Tabs.Screen
+        name="quickAdd"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="add-outline" color={color} size={size} />
+          ),
+          tabBarLabel: "Quck Add",
+          tabBarActiveTintColor: "#000",
+          headerTitle: "Quick Add",
+        }}
       />
       <Tabs.Screen
         name="insights"
