@@ -1,7 +1,7 @@
 // Extenral Dependencies
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react";
-import { Feather } from "@expo/vector-icons";
+import { Feather, EvilIcons, Entypo } from "@expo/vector-icons";
 import { AVPlaybackStatus, Audio } from "expo-av";
 import {
   Extrapolate,
@@ -9,7 +9,6 @@ import {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { FontAwesome5 } from "@expo/vector-icons";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 
 // Relative Dependencies
@@ -61,6 +60,11 @@ const Page = () => {
 
   const animatedIndicatorStyle = useAnimatedStyle(() => ({
     left: `${progress * 100}%`,
+  }));
+
+  const animatedRedCircle = useAnimatedStyle(() => ({
+    width: withTiming(recording ? "60%" : "100%"),
+    borderRadius: withTiming(recording ? 5 : 35),
   }));
 
   const animatedRecordWave = useAnimatedStyle(() => {
@@ -153,6 +157,16 @@ const Page = () => {
     }
   };
 
+  const deleteRecording = async () => {
+    setIsRecording(false);
+    setRecording(null);
+    setRecordedUri(null);
+    setSound(null);
+    setAudioMetering([]);
+    setMemo({ uri: "", metering: [] });
+    setLines([]);
+  };
+
   const onPlaybackStatusUpdate = async (newStatus: AVPlaybackStatus) => {
     setStatus(newStatus);
 
@@ -174,38 +188,80 @@ const Page = () => {
   }, [sound]);
 
   return (
-    <View className="flex-1 justify-center items-center ">
-      <Pressable
-        className="flex flex-col items-center"
-        onPress={isRecording ? stopRecording : startRecording}
-      >
-        {/* <Animated.View style={[styles.recordWaves, animatedRecordWave]} /> */}
-
-        <Feather
-          name="mic"
-          size={72}
-          color={isRecording ? "red" : "blue"}
-          className="z-10"
-        />
-        <Text className="mt-4 text-lg">Record</Text>
-      </Pressable>
-
-      <View style={styles.wave}>
-        {lines.map((db, index) => (
-          <View
-            style={[
-              styles.waveLine,
-              {
-                height: interpolate(db, [-60, 0], [5, 50], Extrapolate.CLAMP),
-                backgroundColor:
-                  progress > index / lines.length ? "royalblue" : "gainsboro",
-              },
-            ]}
-          />
-        ))}
+    <View className="flex-1 flex  items-center">
+      <View style={styles.dot} className="mt-16">
+        <Feather name="mic" size={72} color="#fff" />
       </View>
 
-      <View style={styles.container}>
+      {/* <View>
+        <Animated.View style={[styles.recordWaves, animatedRecordWave]} />
+        <Pressable style={styles.recordButton} onPress={() => {}}>
+          <Animated.View
+            style={[styles.redCircle, animatedRedCircle]}
+            className="flex items-center justify-center"
+          >
+            <Ionicons name="mic-outline" size={40} />
+          </Animated.View>
+        </Pressable>
+      </View> */}
+
+      {recordedUri && (
+        <View style={styles.wave} className="mt-16 pl-4 pr-4">
+          {lines.map((db, index) => (
+            <View
+              key={index}
+              style={[
+                styles.waveLine,
+                {
+                  height: interpolate(db, [-60, 0], [5, 50], Extrapolate.CLAMP),
+                  backgroundColor:
+                    progress > index / lines.length ? "royalblue" : "gainsboro",
+                },
+              ]}
+            />
+          ))}
+        </View>
+      )}
+
+      <Text className="mt-4">
+        {formatMillis(position || 0)} / {formatMillis(duration || 0)}
+      </Text>
+
+      <View className="flex flex-col absolute items-center bottom-28">
+        <View className="flex flex-row gap-4">
+          <View style={styles.playButton}>
+            <Pressable
+              onPress={
+                isRecording
+                  ? stopRecording
+                  : recordedUri
+                  ? playRecording
+                  : startRecording
+              }
+            >
+              <Entypo
+                style={[{ marginLeft: !isRecording ? 6 : 0 }]}
+                name={isRecording ? "controller-stop" : "controller-play"}
+                size={36}
+                color="white"
+              />
+            </Pressable>
+          </View>
+          {recordedUri && (
+            <View style={styles.playButton}>
+              <Pressable onPress={deleteRecording}>
+                <EvilIcons name="undo" size={36} color="white" />
+              </Pressable>
+            </View>
+          )}
+        </View>
+
+        <Text className="mt-4 text-lg text-center">
+          Record a voice note of your meal
+        </Text>
+      </View>
+
+      {/* <View style={styles.container} className="absolute bottom-2">
         <FontAwesome5
           name={isPlaying ? "pause" : "play"}
           size={20}
@@ -223,12 +279,35 @@ const Page = () => {
             {formatMillis(position || 0)} / {formatMillis(duration || 0)}
           </Text>
         </View>
-      </View>
+      </View> */}
+      {recordedUri && (
+        <View className="absolute bottom-8 w-1/2">
+          <Pressable className="bg-red-500 items-center justify-center rounded-md h-12">
+            <Text className="text-white text-base font-semibold">Add Meal</Text>
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  dot: {
+    width: 200,
+    height: 200,
+    borderRadius: 200,
+    backgroundColor: "#ef4444",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  playButton: {
+    width: 75,
+    height: 75,
+    borderRadius: 75,
+    backgroundColor: "#ef4444",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   container: {
     backgroundColor: "white",
     margin: 5,
@@ -272,17 +351,34 @@ const styles = StyleSheet.create({
     borderRadius: 50, // Half of width/height to make it circular
     backgroundColor: "rgba(0,0,0,0.2)", // Example color
   },
-  recordWaves: {
-    backgroundColor: "#FF000055",
-    ...StyleSheet.absoluteFillObject,
-    width: "150%",
-    aspectRatio: 1,
-    top: -20,
-    bottom: -20,
-    left: -20,
-    right: -20,
-    zIndex: -1000,
-  },
+  // recordButton: {
+  //   width: 60,
+  //   height: 60,
+  //   borderRadius: 60,
+
+  //   borderWidth: 3,
+  //   borderColor: "lightgray",
+  //   padding: 3,
+
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  // },
+  // redCircle: {
+  //   backgroundColor: "orangered",
+  //   aspectRatio: 1,
+  //   borderRadius: 30,
+  // },
+  // recordWaves: {
+  //   backgroundColor: "#FF000055",
+  //   ...StyleSheet.absoluteFillObject,
+  //   width: "25%",
+  //   aspectRatio: 1,
+  //   top: -20,
+  //   bottom: -20,
+  //   left: -20,
+  //   right: -20,
+  //   borderRadius: 1000,
+  // },
   wave: {
     flexDirection: "row",
     alignItems: "center",
