@@ -1,5 +1,5 @@
 // External Dependencies
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
 import {
   Modal,
   Pressable,
@@ -8,18 +8,18 @@ import {
   Text,
   TouchableWithoutFeedback,
   View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { useAuth } from "@clerk/clerk-expo";
-import moment from "moment";
-import DatePicker from "react-native-modern-datepicker";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useEffect, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { useAuth } from '@clerk/clerk-expo';
+import moment from 'moment';
+import DatePicker from 'react-native-modern-datepicker';
 
 // Relative Dependencies
-import Meal from "@/components/Meal";
-import { MealData } from "../../../types/types";
+import Meal from '@/components/Meal';
+import { MealData } from '../../../types/types';
 
 const Page = () => {
   const { userId, getToken } = useAuth();
@@ -31,7 +31,7 @@ const Page = () => {
   const { data, refetch } = useQuery({
     queryFn: async (): Promise<MealData[]> => {
       const supabaseAccessToken = await getToken({
-        template: "supabase",
+        template: 'supabase',
       });
 
       if (userId) {
@@ -48,7 +48,7 @@ const Page = () => {
       return [];
     },
     enabled: userId !== undefined,
-    queryKey: ["allMeals", userId, selectedDate.getMonth()],
+    queryKey: ['allMeals', userId, selectedDate.getMonth()],
   });
 
   useEffect(() => {
@@ -65,7 +65,7 @@ const Page = () => {
   const displayDayInHeader = () => {
     const today = new Date();
     return selectedDate.getDate() === today.getDate()
-      ? "Today"
+      ? 'Today'
       : selectedDate.toLocaleDateString();
   };
 
@@ -119,13 +119,15 @@ const Page = () => {
             <View className="flex-1 justify-center">
               <View style={styles.calendar}>
                 <DatePicker
-                  options={{}}
+                  options={{
+                    mainColor: '#15803D',
+                  }}
                   mode="calendar"
                   current={selectedDate.toISOString()}
                   selected={selectedDate.toISOString()}
                   onDateChange={(dateString: string) => {
                     const dateObj = new Date(
-                      `${dateString.replaceAll("/", "-")}T12:00:00`
+                      `${dateString.replaceAll('/', '-')}T12:00:00`
                     );
 
                     setTimeout(() => {
@@ -159,8 +161,8 @@ const Page = () => {
                 notes={meal?.notes}
                 type={meal.type}
                 imageUrls={[
-                  "https://picsum.photos/200",
-                  "https://picsum.photos/id/237/200/300",
+                  'https://picsum.photos/200',
+                  'https://picsum.photos/id/237/200/300',
                 ]} // Should be meal.imageUrls ?? []
               />
             );
@@ -174,10 +176,10 @@ const Page = () => {
 const styles = StyleSheet.create({
   calendar: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 20,
     padding: 20,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
