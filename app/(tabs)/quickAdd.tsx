@@ -1,15 +1,15 @@
 // Extenral Dependencies
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useEffect, useState } from "react";
-import { Feather, EvilIcons, Entypo } from "@expo/vector-icons";
-import { AVPlaybackStatus, Audio } from "expo-av";
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Feather, EvilIcons, Entypo } from '@expo/vector-icons';
+import { AVPlaybackStatus, Audio } from 'expo-av';
 import {
   Extrapolate,
   interpolate,
   useSharedValue,
   withTiming,
-} from "react-native-reanimated";
-import Animated, { useAnimatedStyle } from "react-native-reanimated";
+} from 'react-native-reanimated';
+// import Animated, { useAnimatedStyle } from "react-native-reanimated";
 
 // Relative Dependencies
 
@@ -26,7 +26,7 @@ const Page = () => {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [status, setStatus] = useState<AVPlaybackStatus>();
   const [audioMetering, setAudioMetering] = useState<number[]>([]);
-  const [memo, setMemo] = useState<Memo>({ uri: "", metering: [] });
+  const [memo, setMemo] = useState<Memo>({ uri: '', metering: [] });
   const [lines, setLines] = useState<number[]>([]);
 
   const isPlaying = status?.isLoaded ? status.isPlaying : false;
@@ -55,30 +55,30 @@ const Page = () => {
     const minutes = Math.floor(millis / (1000 * 60));
     const seconds = Math.floor((millis % (1000 * 60)) / 1000);
 
-    return `${minutes}:${seconds < 10 && "0"}${seconds}`;
+    return `${minutes}:${seconds < 10 && '0'}${seconds}`;
   };
 
-  const animatedIndicatorStyle = useAnimatedStyle(() => ({
-    left: `${progress * 100}%`,
-  }));
+  // const animatedIndicatorStyle = useAnimatedStyle(() => ({
+  //   left: `${progress * 100}%`,
+  // }));
 
-  const animatedRedCircle = useAnimatedStyle(() => ({
-    width: withTiming(recording ? "60%" : "100%"),
-    borderRadius: withTiming(recording ? 5 : 35),
-  }));
+  // const animatedRedCircle = useAnimatedStyle(() => ({
+  //   width: withTiming(recording ? "60%" : "100%"),
+  //   borderRadius: withTiming(recording ? 5 : 35),
+  // }));
 
-  const animatedRecordWave = useAnimatedStyle(() => {
-    const size = withTiming(
-      interpolate(metering.value, [-160, -60, 0], [0, 0, -100]),
-      { duration: 100 }
-    );
-    return {
-      top: size,
-      bottom: size,
-      left: size,
-      right: size,
-    };
-  });
+  // const animatedRecordWave = useAnimatedStyle(() => {
+  //   const size = withTiming(
+  //     interpolate(metering.value, [-160, -60, 0], [0, 0, -100]),
+  //     { duration: 100 }
+  //   );
+  //   return {
+  //     top: size,
+  //     bottom: size,
+  //     left: size,
+  //     right: size,
+  //   };
+  // });
 
   useEffect(() => {
     (async () => {
@@ -110,7 +110,7 @@ const Page = () => {
         }
       });
     } catch (error) {
-      console.error("Failed to start recording", error);
+      console.error('Failed to start recording', error);
     }
   };
 
@@ -163,7 +163,7 @@ const Page = () => {
     setRecordedUri(null);
     setSound(null);
     setAudioMetering([]);
-    setMemo({ uri: "", metering: [] });
+    setMemo({ uri: '', metering: [] });
     setLines([]);
   };
 
@@ -215,7 +215,7 @@ const Page = () => {
                 {
                   height: interpolate(db, [-60, 0], [5, 50], Extrapolate.CLAMP),
                   backgroundColor:
-                    progress > index / lines.length ? "royalblue" : "gainsboro",
+                    progress > index / lines.length ? 'royalblue' : 'gainsboro',
                 },
               ]}
             />
@@ -241,7 +241,7 @@ const Page = () => {
             >
               <Entypo
                 style={[{ marginLeft: !isRecording ? 6 : 0 }]}
-                name={isRecording ? "controller-stop" : "controller-play"}
+                name={isRecording ? 'controller-stop' : 'controller-play'}
                 size={36}
                 color="white"
               />
@@ -296,28 +296,28 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 200,
-    backgroundColor: "#ef4444",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#ef4444',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   playButton: {
     width: 75,
     height: 75,
     borderRadius: 75,
-    backgroundColor: "#ef4444",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#ef4444',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   container: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     margin: 5,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 5,
     borderRadius: 10,
     gap: 15,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
@@ -330,26 +330,26 @@ const styles = StyleSheet.create({
   playbackContainer: {
     flex: 1,
     height: 50,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   playbackBackground: {
     height: 3,
-    backgroundColor: "gainsboro",
+    backgroundColor: 'gainsboro',
     borderRadius: 5,
   },
   playbackIndicator: {
     width: 10,
     aspectRatio: 1,
     borderRadius: 10,
-    backgroundColor: "royalblue",
-    position: "absolute",
+    backgroundColor: 'royalblue',
+    position: 'absolute',
   },
   pulse: {
-    position: "absolute",
+    position: 'absolute',
     width: 100, // Adjust size as needed
     height: 100, // Adjust size as needed
     borderRadius: 50, // Half of width/height to make it circular
-    backgroundColor: "rgba(0,0,0,0.2)", // Example color
+    backgroundColor: 'rgba(0,0,0,0.2)', // Example color
   },
   // recordButton: {
   //   width: 60,
@@ -380,14 +380,14 @@ const styles = StyleSheet.create({
   //   borderRadius: 1000,
   // },
   wave: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 3,
   },
   waveLine: {
     flex: 1,
     height: 30,
-    backgroundColor: "gainsboro",
+    backgroundColor: 'gainsboro',
     borderRadius: 20,
   },
 });
