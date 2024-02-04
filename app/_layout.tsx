@@ -1,15 +1,15 @@
 // External Dependencies
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { SplashScreen, Stack, useRouter, usePathname } from 'expo-router';
+import { SplashScreen, Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { Pressable, Text, TouchableOpacity } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Relative Dependencies
+import Providers from '@/components/Providers';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -39,8 +39,6 @@ const tokenCache = {
   },
 };
 
-const queryClient = new QueryClient();
-
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -64,14 +62,14 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <Providers>
       <ClerkProvider
         publishableKey={CLERK_PUBLISHABLE_KEY}
         tokenCache={tokenCache}
       >
         <RootLayoutNav />
       </ClerkProvider>
-    </QueryClientProvider>
+    </Providers>
   );
 }
 

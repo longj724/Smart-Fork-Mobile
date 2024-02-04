@@ -17,7 +17,10 @@
     "@expo/vector-icons": "^14.0.0",
     "@react-native-community/datetimepicker": "7.6.1",
     "@react-navigation/native": "^6.0.2",
-    "@tanstack/react-query": "^5.17.7",
+    "@tanstack/react-query": "^4.36.1",
+    "@trpc/client": "^10.40.0",
+    "@trpc/react-query": "^10.40.0",
+    "@trpc/server": "^10.40.0",
     "axios": "^1.6.3",
     "clsx": "^2.1.0",
     "expo": "~50.0.5",
@@ -53,7 +56,8 @@
     "react-native-screens": "~3.29.0",
     "react-native-web": "~0.19.6",
     "rn-fetch-blob": "^0.12.0",
-    "tailwind-merge": "^2.2.0"
+    "tailwind-merge": "^2.2.0",
+    "uninstall": "^0.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
