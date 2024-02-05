@@ -9,7 +9,7 @@ import {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
-import { useRoute } from '@react-navigation/native';
+import AudioMeter from '@/components/AudioMeter';
 // import Animated, { useAnimatedStyle } from "react-native-reanimated";
 
 // Relative Dependencies
@@ -212,27 +212,13 @@ const Page = () => {
         </Pressable>
       </View> */}
 
-      {recordedUri && (
-        <View style={styles.wave} className="mt-16 pl-4 pr-4">
-          {lines.map((db, index) => (
-            <View
-              key={index}
-              style={[
-                styles.waveLine,
-                {
-                  height: interpolate(db, [-60, 0], [5, 50], Extrapolate.CLAMP),
-                  backgroundColor:
-                    progress > index / lines.length ? 'royalblue' : 'gainsboro',
-                },
-              ]}
-            />
-          ))}
-        </View>
+      {(isRecording || recordedUri) && (
+        <AudioMeter
+          meterValues={audioMetering}
+          position={position}
+          duration={duration}
+        />
       )}
-
-      <Text className="mt-4">
-        {formatMillis(position || 0)} / {formatMillis(duration || 0)}
-      </Text>
 
       <View className="flex flex-col absolute items-center bottom-28">
         <View className="flex flex-row gap-4">
