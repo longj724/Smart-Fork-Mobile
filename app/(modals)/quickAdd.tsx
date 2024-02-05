@@ -7,8 +7,9 @@ import {
   Extrapolate,
   interpolate,
   useSharedValue,
-  withTiming,
 } from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
+import { useRoute } from '@react-navigation/native';
 // import Animated, { useAnimatedStyle } from "react-native-reanimated";
 
 // Relative Dependencies
@@ -20,6 +21,8 @@ interface Memo {
 }
 
 const Page = () => {
+  const router = useRouter();
+
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [recordedUri, setRecordedUri] = useState<string | null>(null);
@@ -187,6 +190,10 @@ const Page = () => {
       : undefined;
   }, [sound]);
 
+  const saveMeal = () => {
+    router.back();
+  };
+
   return (
     <View className="flex-1 flex  items-center">
       <View style={styles.dot} className="mt-16">
@@ -282,7 +289,10 @@ const Page = () => {
       </View> */}
       {recordedUri && (
         <View className="absolute bottom-8 w-1/2">
-          <Pressable className="bg-red-500 items-center justify-center rounded-md h-12">
+          <Pressable
+            className="bg-red-500 items-center justify-center rounded-md h-12"
+            onPress={saveMeal}
+          >
             <Text className="text-white text-base font-semibold">Add Meal</Text>
           </Pressable>
         </View>

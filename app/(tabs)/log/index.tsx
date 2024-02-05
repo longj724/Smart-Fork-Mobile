@@ -1,5 +1,5 @@
 // External Dependencies
-import { Ionicons } from '@expo/vector-icons';
+import { Entypo, Feather, Ionicons } from '@expo/vector-icons';
 import {
   Modal,
   Pressable,
@@ -16,6 +16,7 @@ import axios from 'axios';
 import { useAuth } from '@clerk/clerk-expo';
 import moment from 'moment';
 import DatePicker from 'react-native-modern-datepicker';
+import { useRouter } from 'expo-router';
 
 // Relative Dependencies
 import Meal from '@/components/Meal';
@@ -23,6 +24,7 @@ import { MealData } from '../../../types/types';
 
 const Page = () => {
   const { userId, getToken } = useAuth();
+  const router = useRouter();
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -62,6 +64,10 @@ const Page = () => {
     setShowDatePicker(!showDatePicker);
   };
 
+  const quickAdd = () => {
+    router.push('/(modals)/quickAdd');
+  };
+
   const displayDayInHeader = () => {
     const today = new Date();
     return selectedDate.getDate() === today.getDate()
@@ -87,8 +93,14 @@ const Page = () => {
 
   return (
     <SafeAreaView>
-      <View className="flex h-16 flex-row items-center justify-center bg-green-700">
-        <View className="flex w-full flex-row justify-center gap-2">
+      <View className="flex h-16 flex-row items-center justify-evenly bg-green-700">
+        <Feather
+          name="mic"
+          size={24}
+          style={{ marginRight: 50 }}
+          onPress={quickAdd}
+        />
+        <View className="flex flex-row justify-center gap-2">
           <Pressable
             className="h-8 w-8 items-center justify-center rounded-sm bg-white"
             onPress={moveBackwardOneDay}
@@ -111,6 +123,11 @@ const Page = () => {
             <Ionicons name="arrow-forward-outline" color="black" size={16} />
           </Pressable>
         </View>
+        <Entypo
+          name="dots-three-horizontal"
+          size={24}
+          style={{ marginLeft: 50 }}
+        />
       </View>
 
       {showDatePicker && (

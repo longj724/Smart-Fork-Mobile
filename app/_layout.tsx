@@ -116,7 +116,7 @@ function RootLayoutNav() {
         }}
       />
       <Stack.Screen
-        name="(modals)/addMeal"
+        name="(modals)/quickAdd"
         options={{
           presentation: 'modal',
           headerLeft: () => (
@@ -124,7 +124,7 @@ function RootLayoutNav() {
               <Text>Cancel</Text>
             </TouchableOpacity>
           ),
-          headerTitle: 'Log Meal',
+          headerTitle: 'Add Meal',
         }}
       />
     </Stack>
