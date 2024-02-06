@@ -3,13 +3,12 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Feather, EvilIcons, Entypo } from '@expo/vector-icons';
 import { AVPlaybackStatus, Audio } from 'expo-av';
-import {
-  Extrapolate,
-  interpolate,
-  useSharedValue,
-} from 'react-native-reanimated';
+import { interpolate, useSharedValue } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
-import { useRoute } from '@react-navigation/native';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@clerk/clerk-expo';
+import axios from 'axios';
+import FormData from 'form-data';
 // import Animated, { useAnimatedStyle } from "react-native-reanimated";
 
 // Relative Dependencies
@@ -21,7 +20,9 @@ interface Memo {
 }
 
 const Page = () => {
+  const { getToken, userId } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -32,13 +33,45 @@ const Page = () => {
   const [memo, setMemo] = useState<Memo>({ uri: '', metering: [] });
   const [lines, setLines] = useState<number[]>([]);
 
-  const isPlaying = status?.isLoaded ? status.isPlaying : false;
   const position = status?.isLoaded ? status.positionMillis : 0;
   const duration = status?.isLoaded ? status.durationMillis : 1;
   const progress = (position as number) / (duration as number);
 
   const metering = useSharedValue(-100);
   let numLines = 50;
+
+  const { mutate: quickAddMutation } = useMutation({
+    mutationFn: async (data: FormData) => {
+      const supabaseAccessToken = await getToken({
+        template: 'supabase',
+      });
+
+      return axios.post('http://localhost:3000/meals/quick-add', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: supabaseAccessToken,
+        },
+      });
+    },
+    onSuccess: () => {},
+    onError: () => {},
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['allMeals'] });
+    },
+    mutationKey: ['quickAdd'],
+  });
+
+  const quickAddMeal = () => {
+    if (recordedUri) {
+      const formData = new FormData();
+      formData.append('audio-meal-note', {
+        uri: recordedUri,
+        name: 'test name',
+      });
+      quickAddMutation(formData);
+      router.back();
+    }
+  };
 
   useEffect(() => {
     let newLines = [];
@@ -190,10 +223,6 @@ const Page = () => {
       : undefined;
   }, [sound]);
 
-  const saveMeal = () => {
-    router.back();
-  };
-
   return (
     <View className="flex-1 flex  items-center">
       <View style={styles.dot} className="mt-16">
@@ -220,7 +249,7 @@ const Page = () => {
               style={[
                 styles.waveLine,
                 {
-                  height: interpolate(db, [-60, 0], [5, 50], Extrapolate.CLAMP),
+                  height: interpolate(db, [-60, 0], [5, 50]),
                   backgroundColor:
                     progress > index / lines.length ? 'royalblue' : 'gainsboro',
                 },
@@ -268,30 +297,11 @@ const Page = () => {
         </Text>
       </View>
 
-      {/* <View style={styles.container} className="absolute bottom-2">
-        <FontAwesome5
-          name={isPlaying ? "pause" : "play"}
-          size={20}
-          color="gray"
-          onPress={playRecording}
-        />
-        <View style={styles.playbackContainer}>
-          <View style={styles.playbackBackground} />
-
-          <Animated.View
-            style={[styles.playbackIndicator, animatedIndicatorStyle]}
-          />
-
-          <Text style={{ position: "absolute", right: 0, bottom: 0 }}>
-            {formatMillis(position || 0)} / {formatMillis(duration || 0)}
-          </Text>
-        </View>
-      </View> */}
       {recordedUri && (
         <View className="absolute bottom-8 w-1/2">
           <Pressable
             className="bg-red-500 items-center justify-center rounded-md h-12"
-            onPress={saveMeal}
+            onPress={quickAddMeal}
           >
             <Text className="text-white text-base font-semibold">Add Meal</Text>
           </Pressable>
@@ -361,18 +371,6 @@ const styles = StyleSheet.create({
     borderRadius: 50, // Half of width/height to make it circular
     backgroundColor: 'rgba(0,0,0,0.2)', // Example color
   },
-  // recordButton: {
-  //   width: 60,
-  //   height: 60,
-  //   borderRadius: 60,
-
-  //   borderWidth: 3,
-  //   borderColor: "lightgray",
-  //   padding: 3,
-
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  // },
   // redCircle: {
   //   backgroundColor: "orangered",
   //   aspectRatio: 1,
