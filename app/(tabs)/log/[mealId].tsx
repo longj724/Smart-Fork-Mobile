@@ -7,67 +7,77 @@ import {
   TextInput,
   View,
   Image,
-} from "react-native";
-import { useRef, useState } from "react";
-import { Stack, useLocalSearchParams } from "expo-router";
-import moment from "moment";
-import { Ionicons } from "@expo/vector-icons";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { useMutation } from "@tanstack/react-query";
-import { useAuth } from "@clerk/clerk-expo";
-import axios from "axios";
-import { useRouter } from "expo-router";
+} from 'react-native';
+import { useRef, useState } from 'react';
+import { Stack, useLocalSearchParams } from 'expo-router';
+import moment from 'moment';
+import { Ionicons } from '@expo/vector-icons';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@clerk/clerk-expo';
+import axios from 'axios';
+import { useRouter } from 'expo-router';
 
 // Relative Dependencies
-import { IMealTypeSelectData } from "@/types/types";
-import { mealTypeSelectData } from "@/utils/utils";
+import { IMealTypeSelectData } from '@/types/types';
+import { mealTypeSelectData } from '@/utils/utils';
+import LoadingIndicator from '@/components/LoadingIndicator';
 
+// Interfaces
 interface IMealUpdateData {
-  newMealNotes: string;
-  newDateTime: string;
-  newType: string;
+  notes: string;
+  datetime: string;
+  type: string;
   mealId: string;
 }
 
 const Page = () => {
   const { getToken } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { datetime, imageUrls, mealId, notes, type } = useLocalSearchParams();
-  const imageUrlsArray = (imageUrls as string).split(",");
+  const imageUrlsArray = (imageUrls as string).split(',');
   const datetimeAsDate = moment(datetime).toDate();
 
   const [newMealNotes, setNewMealNotes] = useState(notes as string);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showMealTypeDropdown, setShowMealTypeDropdown] = useState(false);
-  const [selectedMealType, setSelectedMealType] = useState(type as string);
+  const [selectedMealType, setSelectedMealType] = useState(
+    type === '' ? 'Breakfast' : type
+  );
   const [newDatetime, setNewDatetime] = useState(datetimeAsDate);
 
-  const { mutate: updateMealRequest } = useMutation({
-    mutationFn: async () => {
-      const supabaseAccessToken = await getToken({
-        template: "supabase",
-      });
+  const { mutateAsync: updateMealMutation, isPending: updateMealPending } =
+    useMutation({
+      mutationFn: async () => {
+        const supabaseAccessToken = await getToken({
+          template: 'supabase',
+        });
 
-      const data = {
-        mealId: mealId as string,
-        notes: newMealNotes,
-        dateTime: JSON.stringify(datetime),
-        type: type as string,
-      };
+        const data: IMealUpdateData = {
+          mealId: mealId as string,
+          notes: newMealNotes,
+          datetime: JSON.stringify(newDatetime),
+          type: type as string,
+        };
 
-      console.log("here");
-
-      return axios.post("http://localhost:3000/meals/update-meal", data, {
-        headers: {
-          Authorization: supabaseAccessToken,
-        },
-      });
-    },
-    mutationKey: ["updateMeal"],
-    onSuccess: () => {
-      router.back();
-    },
-  });
+        return axios.post('http://localhost:3000/meals/update-meal', data, {
+          headers: {
+            Authorization: supabaseAccessToken,
+          },
+        });
+      },
+      mutationKey: ['updateMeal'],
+      onSuccess: () => {
+        router.back();
+      },
+      onError: (error) => {
+        console.log(error.message);
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ['allMeals'] });
+      },
+    });
 
   const toggleDatePicker = () => {
     setShowDatePicker(!showDatePicker);
@@ -82,11 +92,19 @@ const Page = () => {
     }).start(() => setShowMealTypeDropdown(false));
   };
 
+  const updateMealHandler = () => {
+    updateMealMutation();
+  };
+
+  if (updateMealPending) {
+    return <LoadingIndicator />;
+  }
+
   return (
     <View className="flex flex-col pt-4 w-screen items-center h-screen ">
       <Stack.Screen
         options={{
-          headerTitle: "Edit Meal",
+          headerTitle: 'Edit Meal',
           headerLeft: () => (
             <Ionicons
               color="black"
@@ -122,11 +140,11 @@ const Page = () => {
             <Ionicons name="calendar-outline" size={20} />
             <TextInput
               className="mx-4 flex-1"
-              value={`${datetimeAsDate.toDateString()} ${datetimeAsDate.toLocaleTimeString(
+              value={`${newDatetime.toDateString()} ${newDatetime.toLocaleTimeString(
                 [],
                 {
-                  hour: "2-digit",
-                  minute: "2-digit",
+                  hour: '2-digit',
+                  minute: '2-digit',
                 }
               )}`}
               editable={false}
@@ -184,8 +202,8 @@ const Page = () => {
         )}
       </View>
       <Pressable
-        className="bg-black items-center justify-center rounded-md h-12 w-5/6 mt-8"
-        onPress={() => updateMealRequest()}
+        className="bg-green-700 items-center justify-center rounded-md h-12 w-5/6 mt-8"
+        onPress={updateMealHandler}
       >
         <Text className="text-white text-base font-semibold">Update Meal</Text>
       </Pressable>
