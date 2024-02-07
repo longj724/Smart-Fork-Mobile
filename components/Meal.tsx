@@ -7,9 +7,9 @@ import {
   Pressable,
   Image,
   LayoutChangeEvent,
-} from "react-native";
-import { useState } from "react";
-import { useRouter } from "expo-router";
+} from 'react-native';
+import { useState } from 'react';
+import { useRouter } from 'expo-router';
 
 interface MealProps {
   datetime: Date;
@@ -37,13 +37,13 @@ const Meal = ({ datetime, id, imageUrls, notes, type }: MealProps) => {
   const getMealTime = () => {
     let hours = datetime.getHours();
     const minutes = datetime.getMinutes();
-    const ampm = hours >= 12 ? "pm" : "am";
+    const ampm = hours >= 12 ? 'pm' : 'am';
     hours = hours % 12;
     hours = hours ? hours : 12;
 
     const formattedTime = `${hours}:${minutes
       .toString()
-      .padStart(2, "0")} ${ampm}`;
+      .padStart(2, '0')} ${ampm}`;
 
     return formattedTime;
   };
@@ -87,8 +87,8 @@ const Meal = ({ datetime, id, imageUrls, notes, type }: MealProps) => {
             datetime: datetime.toISOString(),
             id,
             imageUrls,
-            notes: notes ?? "",
-            type: type ?? "",
+            notes: notes ?? '',
+            type: type ?? '',
           },
         })
       }
@@ -97,7 +97,7 @@ const Meal = ({ datetime, id, imageUrls, notes, type }: MealProps) => {
         <View className="w-4/6 flex-col p-2">
           <View className="flex flex-row items-center pl-3">
             <Text className="flex-shrink text-lg font-semibold">
-              {getMealTime()} - {type}
+              {getMealTime()} {type && `- ${type}`}
             </Text>
           </View>
           <View className="ml-3 mt-2 flex flex-col">
