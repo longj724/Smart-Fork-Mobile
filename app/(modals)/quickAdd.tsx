@@ -12,6 +12,7 @@ import FormData from 'form-data';
 // import Animated, { useAnimatedStyle } from "react-native-reanimated";
 
 // Relative Dependencies
+import LoadingIndicator from '@/components/LoadingIndicator';
 
 // Interfaces
 interface Memo {
@@ -40,36 +41,40 @@ const Page = () => {
   const metering = useSharedValue(-100);
   let numLines = 50;
 
-  const { mutate: quickAddMutation } = useMutation({
-    mutationFn: async (data: FormData) => {
-      const supabaseAccessToken = await getToken({
-        template: 'supabase',
-      });
+  const { mutateAsync: quickAddMutation, isPending: quickAddPending } =
+    useMutation({
+      mutationFn: async (data: FormData) => {
+        const supabaseAccessToken = await getToken({
+          template: 'supabase',
+        });
 
-      return axios.post('http://localhost:3000/meals/quick-add', data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: supabaseAccessToken,
-        },
-      });
-    },
-    onSuccess: () => {},
-    onError: () => {},
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['allMeals'] });
-    },
-    mutationKey: ['quickAdd'],
-  });
+        return axios.post('http://localhost:3000/meals/quick-add', data, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: supabaseAccessToken,
+          },
+        });
+      },
+      onSuccess: () => {
+        router.back();
+      },
+      onError: () => {},
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ['allMeals'] });
+      },
+      mutationKey: ['quickAdd'],
+    });
 
-  const quickAddMeal = () => {
+  const quickAddMealHandler = async () => {
     if (recordedUri) {
       const formData = new FormData();
       formData.append('audio-meal-note', {
         uri: recordedUri,
-        name: 'test name',
+        name: 'meal-voice-note',
       });
+      formData.append('userId', userId);
+      formData.append('datetime', JSON.stringify(new Date()));
       quickAddMutation(formData);
-      router.back();
     }
   };
 
@@ -223,6 +228,10 @@ const Page = () => {
       : undefined;
   }, [sound]);
 
+  if (quickAddPending) {
+    return <LoadingIndicator />;
+  }
+
   return (
     <View className="flex-1 flex  items-center">
       <View style={styles.dot} className="mt-16">
@@ -300,8 +309,8 @@ const Page = () => {
       {recordedUri && (
         <View className="absolute bottom-8 w-1/2">
           <Pressable
-            className="bg-red-500 items-center justify-center rounded-md h-12"
-            onPress={quickAddMeal}
+            className="bg-green-700 items-center justify-center rounded-md h-12"
+            onPress={quickAddMealHandler}
           >
             <Text className="text-white text-base font-semibold">Add Meal</Text>
           </Pressable>
@@ -312,22 +321,6 @@ const Page = () => {
 };
 
 const styles = StyleSheet.create({
-  dot: {
-    width: 200,
-    height: 200,
-    borderRadius: 200,
-    backgroundColor: '#ef4444',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  playButton: {
-    width: 75,
-    height: 75,
-    borderRadius: 75,
-    backgroundColor: '#ef4444',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   container: {
     backgroundColor: 'white',
     margin: 5,
@@ -346,6 +339,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
     elevation: 3,
+  },
+  dot: {
+    width: 200,
+    height: 200,
+    borderRadius: 200,
+    backgroundColor: '#15803D',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playButton: {
+    width: 75,
+    height: 75,
+    borderRadius: 75,
+    backgroundColor: '#15803D',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   playbackContainer: {
     flex: 1,
