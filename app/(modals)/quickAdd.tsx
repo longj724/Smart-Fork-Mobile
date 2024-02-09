@@ -96,7 +96,7 @@ const Page = () => {
     const minutes = Math.floor(millis / (1000 * 60));
     const seconds = Math.floor((millis % (1000 * 60)) / 1000);
 
-    return `${minutes}:${seconds < 10 && '0'}${seconds}`;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   // const animatedIndicatorStyle = useAnimatedStyle(() => ({
@@ -260,7 +260,7 @@ const Page = () => {
                 {
                   height: interpolate(db, [-60, 0], [5, 50]),
                   backgroundColor:
-                    progress > index / lines.length ? 'royalblue' : 'gainsboro',
+                    progress > index / lines.length ? '#15803D' : 'gainsboro',
                 },
               ]}
             />
@@ -365,13 +365,6 @@ const styles = StyleSheet.create({
     height: 3,
     backgroundColor: 'gainsboro',
     borderRadius: 5,
-  },
-  playbackIndicator: {
-    width: 10,
-    aspectRatio: 1,
-    borderRadius: 10,
-    backgroundColor: 'royalblue',
-    position: 'absolute',
   },
   pulse: {
     position: 'absolute',
