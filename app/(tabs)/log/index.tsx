@@ -21,6 +21,7 @@ import { useRouter } from 'expo-router';
 // Relative Dependencies
 import Meal from '@/components/Meal';
 import { MealData } from '../../../types/types';
+import DropdownMenu from '@/components/Dropdown';
 
 const Page = () => {
   const { userId, getToken } = useAuth();
@@ -29,6 +30,7 @@ const Page = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const prevSelectedDateRef = useRef(selectedDate);
+  const [viewExtensionsMenu, setViewExtensionsMenu] = useState(false);
 
   const { data, refetch } = useQuery({
     queryFn: async (): Promise<MealData[]> => {
@@ -93,12 +95,13 @@ const Page = () => {
 
   return (
     <SafeAreaView>
-      <View className="flex h-16 flex-row items-center justify-evenly bg-green-700">
+      <View className="flex h-16 flex-row items-center justify-evenly bg-green-700 z-10">
         <Feather
           name="mic"
           size={24}
           style={{ marginRight: 50 }}
           onPress={quickAdd}
+          color="white"
         />
         <View className="flex flex-row justify-center gap-2">
           <Pressable
@@ -123,11 +126,42 @@ const Page = () => {
             <Ionicons name="arrow-forward-outline" color="black" size={16} />
           </Pressable>
         </View>
-        <Entypo
-          name="dots-three-horizontal"
-          size={24}
-          style={{ marginLeft: 50 }}
-        />
+        <View className="relative">
+          <Entypo
+            name="dots-three-horizontal"
+            size={24}
+            style={{ marginLeft: 50 }}
+            color="white"
+            onPress={() => setViewExtensionsMenu(!viewExtensionsMenu)}
+          />
+          {viewExtensionsMenu && (
+            <View
+              className="absolute right-0 mt-8 w-36 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="menu-button"
+            >
+              <View className="py-1" role="none">
+                <Text
+                  className="text-gray-700 block px-4 py-2 text-sm"
+                  role="menuitem"
+                  id="menu-item-0"
+                >
+                  Connect Strava
+                </Text>
+              </View>
+              <View className="py-1" role="none">
+                <Text
+                  className="text-gray-700 block px-4 py-2 text-sm"
+                  role="menuitem"
+                  id="menu-item-1"
+                >
+                  Duplicate
+                </Text>
+              </View>
+            </View>
+          )}
+        </View>
       </View>
 
       {showDatePicker && (
