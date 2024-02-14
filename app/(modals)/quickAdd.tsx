@@ -356,16 +356,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  playbackContainer: {
-    flex: 1,
-    height: 50,
-    justifyContent: 'center',
-  },
-  playbackBackground: {
-    height: 3,
-    backgroundColor: 'gainsboro',
-    borderRadius: 5,
-  },
   pulse: {
     position: 'absolute',
     width: 100, // Adjust size as needed
@@ -373,11 +363,6 @@ const styles = StyleSheet.create({
     borderRadius: 50, // Half of width/height to make it circular
     backgroundColor: 'rgba(0,0,0,0.2)', // Example color
   },
-  // redCircle: {
-  //   backgroundColor: "orangered",
-  //   aspectRatio: 1,
-  //   borderRadius: 30,
-  // },
   // recordWaves: {
   //   backgroundColor: "#FF000055",
   //   ...StyleSheet.absoluteFillObject,

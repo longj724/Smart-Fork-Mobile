@@ -7,37 +7,38 @@ import {
   Text,
   TextInput,
   View,
-} from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import { Ionicons } from "@expo/vector-icons";
-import { useRef, useState } from "react";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { useAuth } from "@clerk/clerk-expo";
-import axios from "axios";
-import FormData from "form-data";
-import { useRouter } from "expo-router";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import moment from "moment";
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from '@expo/vector-icons';
+import { useRef, useState } from 'react';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { useAuth } from '@clerk/clerk-expo';
+import axios from 'axios';
+import FormData from 'form-data';
+import { useRouter } from 'expo-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import moment from 'moment';
 
 // Relative Dependencies
-import MealImage from "@/components/MealImage";
-import { IMealTypeSelectData } from "@/types/types";
-import { mealTypeSelectData } from "@/utils/utils";
+import MealImage from '@/components/MealImage';
+import { IMealTypeSelectData } from '@/types/types';
+import { mealTypeSelectData } from '@/utils/utils';
+import DropdownMenu from '@/components/Dropdown';
 
 const Page = () => {
   const { getToken, userId } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { mutate: addMealRequest } = useMutation({
+  const { mutate: addMealMutation } = useMutation({
     mutationFn: async (data: FormData) => {
       const supabaseAccessToken = await getToken({
-        template: "supabase",
+        template: 'supabase',
       });
 
-      return axios.post("http://localhost:3000/meals/add-meal", data, {
+      return axios.post('http://localhost:3000/meals/add-meal', data, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
           Authorization: supabaseAccessToken,
         },
       });
@@ -45,19 +46,19 @@ const Page = () => {
     onSuccess: () => {},
     onError: () => {},
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["allMeals"] });
+      queryClient.invalidateQueries({ queryKey: ['allMeals'] });
     },
-    mutationKey: ["addMeal"],
+    mutationKey: ['addMeal'],
   });
 
-  const [mealNotes, setMealNotes] = useState<string>("");
+  const [mealNotes, setMealNotes] = useState<string>('');
   const [showPicker, setShowPicker] = useState(false);
   const [date, setDate] = useState(new Date());
   const [selectedImages, setSelectedImages] = useState<
     ImagePicker.ImagePickerAsset[] | null
   >(null);
   const [showMealTypeDropdown, setShowMealTypeDropdown] = useState(false);
-  const [selectedMealType, setSelectedMealType] = useState("Breakfast");
+  const [selectedMealType, setSelectedMealType] = useState('Breakfast');
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
@@ -72,7 +73,7 @@ const Page = () => {
     if (!result.canceled) {
       setSelectedImages(result.assets ?? null);
     } else {
-      alert("You did not select any image.");
+      alert('You did not select any image.');
     }
   };
 
@@ -93,7 +94,7 @@ const Page = () => {
       if (selectedImages) {
         selectedImages.forEach(
           (image: ImagePicker.ImagePickerAsset, index: number) => {
-            formData.append("images", {
+            formData.append('images', {
               uri: image.uri,
               name: image.fileName,
               type: image.type,
@@ -102,16 +103,16 @@ const Page = () => {
         );
       }
 
-      formData.append("notes", mealNotes);
-      formData.append("date", JSON.stringify(moment(date).format()));
-      formData.append("type", selectedMealType);
-      formData.append("userId", userId);
+      formData.append('notes', mealNotes);
+      formData.append('date', JSON.stringify(moment(date).format()));
+      formData.append('type', selectedMealType);
+      formData.append('userId', userId);
 
-      addMealRequest(formData);
+      addMealMutation(formData);
     } catch (error: any) {
       return;
     }
-    router.back();
+    router.push('/(tabs)/log');
   };
 
   const animatedvalue = useRef(new Animated.Value(0)).current;
@@ -134,8 +135,8 @@ const Page = () => {
             <Ionicons name="image-outline" className="mx-auto mb-2" size={50} />
             <Text>
               {selectedImages?.length === 3
-                ? "Maximum number of photos selected"
-                : "Add Photos"}
+                ? 'Maximum number of photos selected'
+                : 'Add Photos'}
             </Text>
           </View>
         </View>
@@ -170,8 +171,8 @@ const Page = () => {
             <TextInput
               className="mx-4 flex-1"
               value={`${date.toDateString()} ${date.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
+                hour: '2-digit',
+                minute: '2-digit',
               })}`}
               editable={false}
               pointerEvents="none"
@@ -229,10 +230,10 @@ const Page = () => {
       </View>
       <View className="mt-10">
         <Pressable
-          className="bg-black items-center justify-center rounded-md h-14"
+          className="bg-black items-center justify-center rounded-md h-14 bg-green-700"
           onPress={addMeal}
         >
-          <Text className="text-white text-base font-semibold">Add Meal</Text>
+          <Text className="text-white text-base font-semibold ">Add Meal</Text>
         </Pressable>
       </View>
     </View>
