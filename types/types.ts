@@ -12,3 +12,8 @@ export interface IMealTypeSelectData {
   key: string;
   value: string;
 }
+
+export interface IMessage {
+  role: string;
+  content: string;
+}
