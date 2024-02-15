@@ -10,6 +10,8 @@ import { useAuth } from '@clerk/clerk-expo';
 import axios from 'axios';
 import FormData from 'form-data';
 // import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import { Easing } from 'react-native-reanimated';
+import { MotiView } from '@motify/components';
 
 // Relative Dependencies
 import LoadingIndicator from '@/components/LoadingIndicator';
@@ -235,20 +237,27 @@ const Page = () => {
   return (
     <View className="flex-1 flex  items-center">
       <View style={styles.dot} className="mt-16">
+        {[...Array(3).keys()].map((index) => (
+          <MotiView
+            from={{ opacity: 0.7, scale: 1 }}
+            animate={
+              isRecording
+                ? { opacity: 0, scale: 2 }
+                : { opacity: 0.7, scale: 1 }
+            }
+            key={index}
+            transition={{
+              type: 'timing',
+              duration: 1500,
+              easing: Easing.out(Easing.ease),
+              delay: index * 200,
+              loop: true,
+            }}
+            style={[StyleSheet.absoluteFillObject, styles.dot]}
+          />
+        ))}
         <Feather name="mic" size={72} color="#fff" />
       </View>
-
-      {/* <View>
-        <Animated.View style={[styles.recordWaves, animatedRecordWave]} />
-        <Pressable style={styles.recordButton} onPress={() => {}}>
-          <Animated.View
-            style={[styles.redCircle, animatedRedCircle]}
-            className="flex items-center justify-center"
-          >
-            <Ionicons name="mic-outline" size={40} />
-          </Animated.View>
-        </Pressable>
-      </View> */}
 
       {recordedUri && (
         <View style={styles.wave} className="mt-16 pl-4 pr-4">
@@ -361,7 +370,7 @@ const styles = StyleSheet.create({
     width: 100, // Adjust size as needed
     height: 100, // Adjust size as needed
     borderRadius: 50, // Half of width/height to make it circular
-    backgroundColor: 'rgba(0,0,0,0.2)', // Example color
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   // recordWaves: {
   //   backgroundColor: "#FF000055",
