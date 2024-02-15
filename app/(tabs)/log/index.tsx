@@ -1,5 +1,5 @@
 // External Dependencies
-import { Entypo, Feather, Ionicons } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import {
   Modal,
   Pressable,
@@ -93,12 +93,13 @@ const Page = () => {
 
   return (
     <SafeAreaView>
-      <View className="flex h-16 flex-row items-center justify-evenly bg-green-700">
+      <View className="flex h-16 flex-row items-center justify-between bg-green-700">
         <Feather
           name="mic"
           size={24}
-          style={{ marginRight: 50 }}
+          style={{ marginLeft: 20 }}
           onPress={quickAdd}
+          color="white"
         />
         <View className="flex flex-row justify-center gap-2">
           <Pressable
@@ -123,11 +124,10 @@ const Page = () => {
             <Ionicons name="arrow-forward-outline" color="black" size={16} />
           </Pressable>
         </View>
-        <Entypo
-          name="dots-three-horizontal"
-          size={24}
-          style={{ marginLeft: 50 }}
-        />
+        {/* Empty View to balance the layout */}
+        <View style={{ width: 24, marginLeft: 20, opacity: 0 }}>
+          <Text> </Text>
+        </View>
       </View>
 
       {showDatePicker && (
