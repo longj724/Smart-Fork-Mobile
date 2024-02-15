@@ -9,13 +9,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@clerk/clerk-expo';
 import axios from 'axios';
 import FormData from 'form-data';
-// import Animated, { useAnimatedStyle } from "react-native-reanimated";
 
 // Relative Dependencies
 import LoadingIndicator from '@/components/LoadingIndicator';
 
 // Interfaces
-interface Memo {
+interface IMemo {
   uri: string;
   metering: number[];
 }
@@ -26,12 +25,13 @@ const Page = () => {
   const queryClient = useQueryClient();
 
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [recordingLength, setRecordingLength] = useState<number>(0);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [recordedUri, setRecordedUri] = useState<string | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [status, setStatus] = useState<AVPlaybackStatus>();
   const [audioMetering, setAudioMetering] = useState<number[]>([]);
-  const [memo, setMemo] = useState<Memo>({ uri: '', metering: [] });
+  const [memo, setMemo] = useState<IMemo>({ uri: '', metering: [] });
   const [lines, setLines] = useState<number[]>([]);
 
   const position = status?.isLoaded ? status.positionMillis : 0;
@@ -79,6 +79,22 @@ const Page = () => {
   };
 
   useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (isRecording) {
+      interval = setInterval(() => {
+        setRecordingLength((seconds) => seconds + 1000);
+      }, 1000);
+    } else if (!isRecording && interval && recordingLength !== 0) {
+      clearInterval(interval);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRecording]);
+
+  useEffect(() => {
     let newLines = [];
     for (let i = 0; i < numLines && memo.metering.length; i++) {
       const meteringIndex = Math.floor((i * memo.metering.length) / numLines);
@@ -98,28 +114,6 @@ const Page = () => {
 
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
-
-  // const animatedIndicatorStyle = useAnimatedStyle(() => ({
-  //   left: `${progress * 100}%`,
-  // }));
-
-  // const animatedRedCircle = useAnimatedStyle(() => ({
-  //   width: withTiming(recording ? "60%" : "100%"),
-  //   borderRadius: withTiming(recording ? 5 : 35),
-  // }));
-
-  // const animatedRecordWave = useAnimatedStyle(() => {
-  //   const size = withTiming(
-  //     interpolate(metering.value, [-160, -60, 0], [0, 0, -100]),
-  //     { duration: 100 }
-  //   );
-  //   return {
-  //     top: size,
-  //     bottom: size,
-  //     left: size,
-  //     right: size,
-  //   };
-  // });
 
   useEffect(() => {
     (async () => {
@@ -201,6 +195,7 @@ const Page = () => {
   const deleteRecording = async () => {
     setIsRecording(false);
     setRecording(null);
+    setRecordingLength(0);
     setRecordedUri(null);
     setSound(null);
     setAudioMetering([]);
@@ -238,18 +233,6 @@ const Page = () => {
         <Feather name="mic" size={72} color="#fff" />
       </View>
 
-      {/* <View>
-        <Animated.View style={[styles.recordWaves, animatedRecordWave]} />
-        <Pressable style={styles.recordButton} onPress={() => {}}>
-          <Animated.View
-            style={[styles.redCircle, animatedRedCircle]}
-            className="flex items-center justify-center"
-          >
-            <Ionicons name="mic-outline" size={40} />
-          </Animated.View>
-        </Pressable>
-      </View> */}
-
       {recordedUri && (
         <View style={styles.wave} className="mt-16 pl-4 pr-4">
           {lines.map((db, index) => (
@@ -269,7 +252,10 @@ const Page = () => {
       )}
 
       <Text className="mt-4">
-        {formatMillis(position || 0)} / {formatMillis(duration || 0)}
+        {formatMillis(position || 0)} /{' '}
+        {isRecording
+          ? formatMillis(recordingLength)
+          : formatMillis(duration || 0)}
       </Text>
 
       <View className="flex flex-col absolute items-center bottom-28">
@@ -356,24 +342,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pulse: {
-    position: 'absolute',
-    width: 100, // Adjust size as needed
-    height: 100, // Adjust size as needed
-    borderRadius: 50, // Half of width/height to make it circular
-    backgroundColor: 'rgba(0,0,0,0.2)', // Example color
-  },
-  // recordWaves: {
-  //   backgroundColor: "#FF000055",
-  //   ...StyleSheet.absoluteFillObject,
-  //   width: "25%",
-  //   aspectRatio: 1,
-  //   top: -20,
-  //   bottom: -20,
-  //   left: -20,
-  //   right: -20,
-  //   borderRadius: 1000,
-  // },
   wave: {
     flexDirection: 'row',
     alignItems: 'center',
