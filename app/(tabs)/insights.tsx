@@ -97,12 +97,13 @@ const Page = () => {
 
   return (
     <View className="flex flex-col h-full">
-      <View className="flex flex-col pl-3 pt-2 pr-3">
+      <View className="flex flex-col pl-3 pt-2 pr-3 flex-1">
         <FlatList
-          contentContainerStyle={{ gap: 10, paddingBottom: 100 }}
+          contentContainerStyle={{ gap: 10, paddingBottom: 75 }}
           data={messages}
           ref={messagesRef}
           renderItem={({ item }) => <Message message={item} />}
+          showsVerticalScrollIndicator={false}
         />
       </View>
       <KeyboardAvoidingView
@@ -112,8 +113,9 @@ const Page = () => {
       >
         <View className="flex-row items-center mb-2">
           <TextInput
+            multiline={true}
             placeholder="Ask AI a message about your goals"
-            className="flex-1 bg-gray-100 p-3 rounded-full"
+            className="flex-1 bg-gray-100 p-3 rounded-md"
             value={currentInput}
             onChangeText={setCurrentInput}
           />
