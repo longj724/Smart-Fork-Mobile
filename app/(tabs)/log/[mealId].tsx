@@ -13,28 +13,16 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@clerk/clerk-expo';
-import axios from 'axios';
 import { useRouter } from 'expo-router';
 
 // Relative Dependencies
-import { IMealTypeSelectData } from '@/types/types';
+import { IMealTypeSelectData, IMealUpdateData } from '@/types/types';
 import { mealTypeSelectData } from '@/utils/utils';
 import LoadingIndicator from '@/components/LoadingIndicator';
-
-// Interfaces
-interface IMealUpdateData {
-  notes: string;
-  datetime: string;
-  type: string;
-  mealId: string;
-}
+import { useUpdateMealMutation } from '@/hooks/useUpdateMealMutation';
 
 const Page = () => {
-  const { getToken } = useAuth();
   const router = useRouter();
-  const queryClient = useQueryClient();
   const { datetime, imageUrls, mealId, notes, type } = useLocalSearchParams();
   const imageUrlsArray = (imageUrls as string).split(',');
   const datetimeAsDate = moment(datetime).toDate();
@@ -48,36 +36,7 @@ const Page = () => {
   const [newDatetime, setNewDatetime] = useState(datetimeAsDate);
 
   const { mutateAsync: updateMealMutation, isPending: updateMealPending } =
-    useMutation({
-      mutationFn: async () => {
-        const supabaseAccessToken = await getToken({
-          template: 'supabase',
-        });
-
-        const data: IMealUpdateData = {
-          mealId: mealId as string,
-          notes: newMealNotes,
-          datetime: JSON.stringify(newDatetime),
-          type: type as string,
-        };
-
-        return axios.post('http://localhost:3000/meals/update-meal', data, {
-          headers: {
-            Authorization: supabaseAccessToken,
-          },
-        });
-      },
-      mutationKey: ['updateMeal'],
-      onSuccess: () => {
-        router.back();
-      },
-      onError: (error) => {
-        console.log(error.message);
-      },
-      onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: ['allMeals'] });
-      },
-    });
+    useUpdateMealMutation();
 
   const toggleDatePicker = () => {
     setShowDatePicker(!showDatePicker);
@@ -93,7 +52,14 @@ const Page = () => {
   };
 
   const updateMealHandler = () => {
-    updateMealMutation();
+    const data: IMealUpdateData = {
+      mealId: mealId as string,
+      notes: newMealNotes,
+      datetime: JSON.stringify(newDatetime),
+      type: selectedMealType as string,
+    };
+
+    updateMealMutation(data);
   };
 
   if (updateMealPending) {

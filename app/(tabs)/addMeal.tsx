@@ -3,55 +3,30 @@ import {
   Animated,
   FlatList,
   Pressable,
+  SafeAreaView,
   ScrollView,
   Text,
   TextInput,
   View,
-  StatusBar,
-  SafeAreaView,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useAuth } from '@clerk/clerk-expo';
-import axios from 'axios';
 import FormData from 'form-data';
-import { useRouter } from 'expo-router';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
-// import { StatusBar } from 'expo-status-bar';
 
 // Relative Dependencies
 import MealImage from '@/components/MealImage';
 import { IMealTypeSelectData } from '@/types/types';
 import { mealTypeSelectData } from '@/utils/utils';
+import { useLogMealMutation } from '@/hooks/useLogMealMutation';
 
 const Page = () => {
-  const { getToken, userId } = useAuth();
-  const router = useRouter();
-  const queryClient = useQueryClient();
+  const { userId } = useAuth();
 
-  const { mutate: addMealMutation } = useMutation({
-    mutationFn: async (data: FormData) => {
-      const supabaseAccessToken = await getToken({
-        template: 'supabase',
-      });
-
-      return axios.post('http://localhost:3000/meals/add-meal', data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: supabaseAccessToken,
-        },
-      });
-    },
-    onSuccess: () => {},
-    onError: () => {},
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['allMeals'] });
-    },
-    mutationKey: ['addMeal'],
-  });
+  const { mutate: logMealMutation } = useLogMealMutation();
 
   const [mealNotes, setMealNotes] = useState<string>('');
   const [showPicker, setShowPicker] = useState(false);
@@ -90,31 +65,26 @@ const Page = () => {
   };
 
   const addMeal = async () => {
-    try {
-      const formData = new FormData();
+    const formData = new FormData();
 
-      if (selectedImages) {
-        selectedImages.forEach(
-          (image: ImagePicker.ImagePickerAsset, index: number) => {
-            formData.append('images', {
-              uri: image.uri,
-              name: image.fileName,
-              type: image.type,
-            });
-          }
-        );
-      }
-
-      formData.append('notes', mealNotes);
-      formData.append('date', JSON.stringify(moment(date).format()));
-      formData.append('type', selectedMealType);
-      formData.append('userId', userId);
-
-      addMealMutation(formData);
-    } catch (error: any) {
-      return;
+    if (selectedImages) {
+      selectedImages.forEach(
+        (image: ImagePicker.ImagePickerAsset, index: number) => {
+          formData.append('images', {
+            uri: image.uri,
+            name: image.fileName,
+            type: image.type,
+          });
+        }
+      );
     }
-    router.push('/(tabs)/log');
+
+    formData.append('notes', mealNotes);
+    formData.append('date', JSON.stringify(moment(date).format()));
+    formData.append('type', selectedMealType);
+    formData.append('userId', userId);
+
+    logMealMutation(formData);
   };
 
   const animatedvalue = useRef(new Animated.Value(0)).current;

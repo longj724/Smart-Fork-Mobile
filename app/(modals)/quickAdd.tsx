@@ -4,14 +4,12 @@ import { useEffect, useState } from 'react';
 import { Feather, EvilIcons, Entypo } from '@expo/vector-icons';
 import { AVPlaybackStatus, Audio } from 'expo-av';
 import { interpolate, useSharedValue } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@clerk/clerk-expo';
-import axios from 'axios';
 import FormData from 'form-data';
 
 // Relative Dependencies
 import LoadingIndicator from '@/components/LoadingIndicator';
+import { useQuickAddMutation } from '@/hooks/useQuickAddMutation';
 
 // Interfaces
 interface IMemo {
@@ -20,9 +18,7 @@ interface IMemo {
 }
 
 const Page = () => {
-  const { getToken, userId } = useAuth();
-  const router = useRouter();
-  const queryClient = useQueryClient();
+  const { userId } = useAuth();
 
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [recordingLength, setRecordingLength] = useState<number>(0);
@@ -42,28 +38,7 @@ const Page = () => {
   let numLines = 50;
 
   const { mutateAsync: quickAddMutation, isPending: quickAddPending } =
-    useMutation({
-      mutationFn: async (data: FormData) => {
-        const supabaseAccessToken = await getToken({
-          template: 'supabase',
-        });
-
-        return axios.post('http://localhost:3000/meals/quick-add', data, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: supabaseAccessToken,
-          },
-        });
-      },
-      onSuccess: () => {
-        router.back();
-      },
-      onError: () => {},
-      onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: ['allMeals'] });
-      },
-      mutationKey: ['quickAdd'],
-    });
+    useQuickAddMutation();
 
   const quickAddMealHandler = async () => {
     if (recordedUri) {

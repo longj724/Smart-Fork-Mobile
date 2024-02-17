@@ -13,6 +13,13 @@ export interface IMealTypeSelectData {
   value: string;
 }
 
+export interface IMealUpdateData {
+  notes: string;
+  datetime: string;
+  type: string;
+  mealId: string;
+}
+
 export interface IMessage {
   role: string;
   content: string;
