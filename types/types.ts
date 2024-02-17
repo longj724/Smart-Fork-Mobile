@@ -1,4 +1,4 @@
-export interface MealData {
+export interface IMealData {
   created_at: string;
   id: number;
   notes: string | null;

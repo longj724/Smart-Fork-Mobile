@@ -8,74 +8,33 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import axios from 'axios';
-import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAuth } from '@clerk/clerk-expo';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // Relative Dependencies
 import Message from '@/components/Message';
 import { IMessage } from '@/types/types';
+import { useMessagesQuery } from '@/hooks/useMessagesQuery';
+import { useSendMessagesMutation } from '@/hooks/useSendMessageMutation';
 
 const Page = () => {
-  const { getToken, userId } = useAuth();
+  const { userId } = useAuth();
 
-  const { isLoading: isLoadingMessages } = useQuery({
-    queryFn: async () => {
-      const supabaseAccessToken = await getToken({
-        template: 'supabase',
-      });
-
-      const { data } = await axios.get(
-        `http://localhost:3000/insights/messages/${userId}`,
-        {
-          headers: {
-            Authorization: supabaseAccessToken,
-          },
-        }
-      );
-
-      const messageResponse: IMessage[] = JSON.parse(data.messages);
-      setMessages(messageResponse);
-      messagesRef.current?.scrollToEnd({ animated: true });
-
-      return messageResponse;
-    },
-    enabled: userId !== null,
-    queryKey: ['messages', userId],
-  });
+  const { data: messageData, isLoading: isLoadingMessages } =
+    useMessagesQuery(userId);
 
   const [messages, setMessages] = useState<IMessage[] | undefined>([]);
   const [currentInput, setCurrentInput] = useState('');
   const messagesRef = useRef<FlatList<any>>(null);
 
-  const { mutate: sendMessageMutation } = useMutation({
-    mutationFn: async (message: string) => {
-      const supabaseAccessToken = await getToken({
-        template: 'supabase',
-      });
+  useEffect(() => {
+    setMessages(messageData);
+    messagesRef.current?.scrollToEnd({ animated: true });
+  }, [messageData]);
 
-      const data = {
-        message,
-        userId,
-      };
+  useEffect(() => {}, []);
 
-      return axios.post('http://localhost:3000/insights/send-message', data, {
-        headers: {
-          Authorization: supabaseAccessToken,
-        },
-      });
-    },
-    mutationKey: ['sendMessage'],
-    onError: () => {},
-    onSettled: (response) => {
-      const newMessage: IMessage = response?.data.message;
-      setMessages((existingMessages) => {
-        existingMessages?.pop();
-        return [...(existingMessages as IMessage[]), newMessage];
-      });
-    },
-  });
+  const sendMessageMutation = useSendMessagesMutation(userId);
 
   const onSend = () => {
     const userMessage: IMessage = {
@@ -92,7 +51,15 @@ const Page = () => {
     ]);
     setCurrentInput('');
     messagesRef.current?.scrollToEnd({ animated: true });
-    sendMessageMutation(currentInput);
+    sendMessageMutation.mutate(currentInput, {
+      onSettled: (response) => {
+        const newMessage: IMessage = response?.data.message;
+        setMessages((existingMessages) => {
+          existingMessages?.pop();
+          return [...(existingMessages as IMessage[]), newMessage];
+        });
+      },
+    });
   };
 
   return (

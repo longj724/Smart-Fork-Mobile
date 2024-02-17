@@ -3,16 +3,14 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import {
   Modal,
   Pressable,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
-  SafeAreaView,
 } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { useAuth } from '@clerk/clerk-expo';
 import moment from 'moment';
 import DatePicker from 'react-native-modern-datepicker';
@@ -20,38 +18,18 @@ import { useRouter } from 'expo-router';
 
 // Relative Dependencies
 import Meal from '@/components/Meal';
-import { MealData } from '../../../types/types';
+import { IMealData } from '../../../types/types';
+import { useAllMealsQuery } from '@/hooks/useAllMealsQuery';
 
 const Page = () => {
-  const { userId, getToken } = useAuth();
+  const { userId } = useAuth();
   const router = useRouter();
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const prevSelectedDateRef = useRef(selectedDate);
 
-  const { data, refetch } = useQuery({
-    queryFn: async (): Promise<MealData[]> => {
-      const supabaseAccessToken = await getToken({
-        template: 'supabase',
-      });
-
-      if (userId) {
-        const { data } = await axios.get(
-          `http://localhost:3000/meals/all-meals/${userId}?datetime=${selectedDate.toISOString()}`,
-          {
-            headers: {
-              Authorization: supabaseAccessToken,
-            },
-          }
-        );
-        return data;
-      }
-      return [];
-    },
-    enabled: userId !== undefined,
-    queryKey: ['allMeals', userId, selectedDate.getMonth()],
-  });
+  const { data, refetch } = useAllMealsQuery(userId, selectedDate);
 
   useEffect(() => {
     if (prevSelectedDateRef.current.getMonth() !== selectedDate.getMonth()) {
@@ -159,15 +137,15 @@ const Page = () => {
       <ScrollView className="pl-4 pr-4 pb-20 bg-gray-200">
         {data
           ?.filter(
-            ({ datetime }: MealData) =>
+            ({ datetime }: IMealData) =>
               new Date(datetime).getDate() == selectedDate.getDate()
           )
           .sort(
-            (meal1: MealData, meal2: MealData) =>
+            (meal1: IMealData, meal2: IMealData) =>
               new Date(meal1.datetime).getTime() -
               new Date(meal2.datetime).getTime()
           )
-          .map((meal: MealData) => {
+          .map((meal: IMealData) => {
             return (
               <Meal
                 id={meal.id.toString()}
