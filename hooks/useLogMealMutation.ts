@@ -17,15 +17,9 @@ const logMeal = async (data: FormData, accessToken: string | null) => {
 };
 
 export const useLogMealMutation = () => {
-  const router = useRouter();
   const { getToken } = useAuth();
-  const queryClient = useQueryClient();
 
   return useMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['allMeals'] });
-      router.push('/(tabs)/log');
-    },
     mutationKey: ['logMeal'],
     mutationFn: async (mealData: FormData) => {
       const accessToken = await getToken({ template: 'supabase' });

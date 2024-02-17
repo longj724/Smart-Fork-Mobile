@@ -16,17 +16,22 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useAuth } from '@clerk/clerk-expo';
 import FormData from 'form-data';
 import moment from 'moment';
+import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Relative Dependencies
 import MealImage from '@/components/MealImage';
 import { IMealTypeSelectData } from '@/types/types';
 import { mealTypeSelectData } from '@/utils/utils';
 import { useLogMealMutation } from '@/hooks/useLogMealMutation';
+import LoadingIndicator from '@/components/LoadingIndicator';
 
 const Page = () => {
   const { userId } = useAuth();
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const { mutate: logMealMutation } = useLogMealMutation();
+  const logMealMutation = useLogMealMutation();
 
   const [mealNotes, setMealNotes] = useState<string>('');
   const [showPicker, setShowPicker] = useState(false);
@@ -84,7 +89,16 @@ const Page = () => {
     formData.append('type', selectedMealType);
     formData.append('userId', userId);
 
-    logMealMutation(formData);
+    logMealMutation.mutate(formData, {
+      onSuccess: () => {
+        setMealNotes('');
+        setDate(new Date());
+        setSelectedImages(null);
+        setSelectedMealType('Breakfast');
+        queryClient.invalidateQueries({ queryKey: ['allMeals'] });
+        router.back();
+      },
+    });
   };
 
   const animatedvalue = useRef(new Animated.Value(0)).current;
@@ -95,6 +109,10 @@ const Page = () => {
       useNativeDriver: false,
     }).start(() => setShowMealTypeDropdown(false));
   };
+
+  if (logMealMutation.isPending) {
+    return <LoadingIndicator />;
+  }
 
   return (
     <>
