@@ -1,5 +1,5 @@
 // External Dependencies
-import { Stack } from "expo-router";
+import { Stack } from 'expo-router';
 
 const LogLayout = () => {
   return (
@@ -8,7 +8,7 @@ const LogLayout = () => {
         name="index"
         options={{
           headerShown: false,
-          headerTitle: "Log",
+          headerTitle: 'Log',
         }}
       />
     </Stack>

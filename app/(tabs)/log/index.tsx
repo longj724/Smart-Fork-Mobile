@@ -8,8 +8,8 @@ import {
   Text,
   TouchableWithoutFeedback,
   View,
+  SafeAreaView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -70,7 +70,7 @@ const Page = () => {
 
   const displayDayInHeader = () => {
     const today = new Date();
-    return selectedDate.getDate() === today.getDate()
+    return selectedDate.toDateString() === today.toDateString()
       ? 'Today'
       : selectedDate.toLocaleDateString();
   };
@@ -92,42 +92,40 @@ const Page = () => {
   };
 
   return (
-    <SafeAreaView>
-      <View className="flex h-16 flex-row items-center justify-between bg-green-700">
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="flex h-16 flex-row items-center justify-between bg-white">
         <Feather
           name="mic"
           size={24}
           style={{ marginLeft: 20 }}
           onPress={quickAdd}
-          color="white"
+          color="#15803D"
         />
         <View className="flex flex-row justify-center gap-2">
           <Pressable
-            className="h-8 w-8 items-center justify-center rounded-sm bg-white"
+            className="h-8 w-8 items-center justify-center rounded-sm bg-green-700"
             onPress={moveBackwardOneDay}
           >
-            <Ionicons name="arrow-back-outline" color="black" size={16} />
+            <Ionicons name="arrow-back-outline" color="white" size={16} />
           </Pressable>
           <Pressable
-            className="flex w-28 flex-row items-center justify-center gap-1 rounded-sm bg-white"
+            className="flex w-28 flex-row items-center justify-center gap-1 rounded-sm bg-green-700"
             onPress={toggleDatePicker}
           >
-            <Text className="font-semibold text-black">
+            <Text className="font-semibold text-white">
               {displayDayInHeader()}
             </Text>
-            <Ionicons name="caret-down-outline" color="black" />
+            <Ionicons name="caret-down-outline" color="white" />
           </Pressable>
           <Pressable
-            className="h-8 w-8 items-center justify-center rounded-sm bg-white"
+            className="h-8 w-8 items-center justify-center rounded-sm bg-green-700"
             onPress={moveForwardOneDay}
           >
-            <Ionicons name="arrow-forward-outline" color="black" size={16} />
+            <Ionicons name="arrow-forward-outline" color="white" size={16} />
           </Pressable>
         </View>
         {/* Empty View to balance the layout */}
-        <View style={{ width: 24, marginLeft: 20, opacity: 0 }}>
-          <Text> </Text>
-        </View>
+        <View style={{ width: 24, marginLeft: 20, opacity: 0 }}></View>
       </View>
 
       {showDatePicker && (
@@ -158,7 +156,7 @@ const Page = () => {
           </TouchableWithoutFeedback>
         </Modal>
       )}
-      <ScrollView className="pl-4 pr-4 pb-20">
+      <ScrollView className="pl-4 pr-4 pb-20 bg-gray-200">
         {data
           ?.filter(
             ({ datetime }: MealData) =>
@@ -184,7 +182,7 @@ const Page = () => {
               />
             );
           })}
-        <View className="h-10"></View>
+        <View className="h-10 bg-gray-200"></View>
       </ScrollView>
     </SafeAreaView>
   );

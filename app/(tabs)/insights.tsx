@@ -7,7 +7,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Ionicons, Entypo } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAuth } from '@clerk/clerk-expo';
@@ -113,6 +113,11 @@ const Page = () => {
       >
         <View className="flex-row items-center mb-2">
           <TextInput
+            onPressIn={() => {
+              if (currentInput === '') {
+                messagesRef.current?.scrollToEnd({ animated: true });
+              }
+            }}
             multiline={true}
             placeholder="Ask AI a message about your goals"
             className="flex-1 bg-gray-100 p-3 rounded-md"

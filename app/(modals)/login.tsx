@@ -1,27 +1,27 @@
 // External Dependencies
-import { View, Text, TextInput, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet } from "react-native";
-import { useOAuth } from "@clerk/clerk-expo";
-import { useRouter } from "expo-router";
+import { View, Text, TextInput, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet } from 'react-native';
+import { useOAuth } from '@clerk/clerk-expo';
+import { useRouter } from 'expo-router';
 
 // Relative Dependencies
-import { useWarmUpBrowser } from "../../hooks/useWarmUpBrowser";
+import { useWarmUpBrowser } from '../../hooks/useWarmUpBrowser';
 
 enum Strategy {
-  Google = "oauth_google",
-  Apple = "oauth_apple",
-  Facebook = "oauth_facebook",
+  Google = 'oauth_google',
+  Apple = 'oauth_apple',
+  Facebook = 'oauth_facebook',
 }
 
 const Page = () => {
   useWarmUpBrowser();
 
   const router = useRouter();
-  const { startOAuthFlow: googleAuth } = useOAuth({ strategy: "oauth_google" });
-  const { startOAuthFlow: appleAuth } = useOAuth({ strategy: "oauth_apple" });
+  const { startOAuthFlow: googleAuth } = useOAuth({ strategy: 'oauth_google' });
+  const { startOAuthFlow: appleAuth } = useOAuth({ strategy: 'oauth_apple' });
   const { startOAuthFlow: facebookAuth } = useOAuth({
-    strategy: "oauth_facebook",
+    strategy: 'oauth_facebook',
   });
 
   const onSelectAuth = async (strategy: Strategy) => {
@@ -39,7 +39,7 @@ const Page = () => {
         router.back();
       }
     } catch (err) {
-      console.error("OAuth error", err);
+      console.error('OAuth error', err);
     }
   };
 
@@ -64,7 +64,7 @@ const Page = () => {
         <View
           style={{
             flex: 1,
-            borderBottomColor: "black",
+            borderBottomColor: 'black',
             borderBottomWidth: StyleSheet.hairlineWidth,
           }}
         />
@@ -72,7 +72,7 @@ const Page = () => {
         <View
           style={{
             flex: 1,
-            borderBottomColor: "black",
+            borderBottomColor: 'black',
             borderBottomWidth: StyleSheet.hairlineWidth,
           }}
         />
@@ -84,7 +84,7 @@ const Page = () => {
           style={stylesheet.btnOutline}
           onPress={() => onSelectAuth(Strategy.Apple)}
         >
-          <Ionicons name="md-logo-apple" size={24} style={stylesheet.btnIcon} />
+          <Ionicons name="logo-apple" size={24} style={stylesheet.btnIcon} />
           <Text style={stylesheet.btnOutlineText}>Continue with Apple</Text>
         </Pressable>
 
@@ -92,11 +92,7 @@ const Page = () => {
           style={[stylesheet.btnOutline, { marginBottom: 20 }]}
           onPress={() => onSelectAuth(Strategy.Google)}
         >
-          <Ionicons
-            name="md-logo-google"
-            size={24}
-            style={stylesheet.btnIcon}
-          />
+          <Ionicons name="logo-google" size={24} style={stylesheet.btnIcon} />
           <Text style={stylesheet.btnOutlineText}>Continue with Google</Text>
         </Pressable>
       </View>
@@ -104,7 +100,7 @@ const Page = () => {
         <Text className="align-center mr-2 justify-center">
           Don't have an account?
         </Text>
-        <Pressable onPress={() => router.push("/(modals)/signUp")}>
+        <Pressable onPress={() => router.push('/(modals)/signUp')}>
           <Text className="font-semibold underline">Sign up for free</Text>
         </Pressable>
       </View>
@@ -114,69 +110,69 @@ const Page = () => {
 
 const stylesheet = StyleSheet.create({
   container: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flex: 1,
-    backgroundColor: "#FDFFFF",
+    backgroundColor: '#FDFFFF',
     padding: 26,
   },
   seperatorView: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 10,
-    alignItems: "center",
+    alignItems: 'center',
     marginVertical: 30,
   },
   seperator: {
-    color: "#5E5D5E",
+    color: '#5E5D5E',
   },
   inputField: {
     height: 44,
     borderWidth: 1,
-    borderColor: "#ABABAB",
+    borderColor: '#ABABAB',
     borderRadius: 8,
     padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   btn: {
-    backgroundColor: "#FF385C",
+    backgroundColor: '#FF385C',
     height: 50,
     borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   btnText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
   },
   btnIcon: {
-    position: "absolute",
+    position: 'absolute',
     left: 16,
   },
   btnOutline: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: "#5E5D5E",
+    borderColor: '#5E5D5E',
     height: 50,
     borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
     paddingHorizontal: 10,
   },
   btnOutlineText: {
-    color: "#000",
+    color: '#000',
     fontSize: 16,
   },
   footer: {
-    position: "absolute",
+    position: 'absolute',
     height: 100,
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderTopColor: "#5E5D5E",
+    borderTopColor: '#5E5D5E',
     borderTopWidth: StyleSheet.hairlineWidth,
   },
 });

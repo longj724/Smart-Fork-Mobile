@@ -1,10 +1,8 @@
 // External Dependencies
-import { Tabs, useRouter } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 const TabsLayout = () => {
-  const router = useRouter();
-
   return (
     <Tabs>
       <Tabs.Screen
@@ -15,7 +13,7 @@ const TabsLayout = () => {
             <Ionicons name="calendar-outline" color={color} size={size} />
           ),
           tabBarLabel: 'Log',
-          tabBarActiveTintColor: '#000',
+          tabBarActiveTintColor: '#15803D',
         }}
       />
       <Tabs.Screen
@@ -25,7 +23,7 @@ const TabsLayout = () => {
             <Ionicons name="add-outline" color={color} size={size} />
           ),
           tabBarLabel: 'Log Meal',
-          tabBarActiveTintColor: '#000',
+          tabBarActiveTintColor: '#15803D',
           headerTitle: 'Log Meal',
         }}
       />
@@ -36,7 +34,7 @@ const TabsLayout = () => {
             <Ionicons name="stats-chart-outline" color={color} size={size} />
           ),
           tabBarLabel: 'Insights',
-          tabBarActiveTintColor: '#000',
+          tabBarActiveTintColor: '#15803D',
           headerTitle: 'Insights',
         }}
       />
