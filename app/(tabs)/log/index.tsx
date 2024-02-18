@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@clerk/clerk-expo';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import DatePicker from 'react-native-modern-datepicker';
 import { useRouter } from 'expo-router';
 
@@ -150,13 +150,10 @@ const Page = () => {
               <Meal
                 id={meal.id.toString()}
                 key={meal.datetime.toString()}
-                datetime={moment(meal.datetime).toDate()}
+                datetime={DateTime.fromISO(meal.datetime)}
                 notes={meal?.notes}
                 type={meal.type}
-                imageUrls={[
-                  'https://picsum.photos/200',
-                  'https://picsum.photos/id/237/200/300',
-                ]} // Should be meal.imageUrls ?? []
+                imageUrls={meal?.imageUrls ?? []}
               />
             );
           })}

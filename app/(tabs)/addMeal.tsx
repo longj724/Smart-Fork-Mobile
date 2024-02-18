@@ -15,7 +15,6 @@ import { useRef, useState } from 'react';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useAuth } from '@clerk/clerk-expo';
 import FormData from 'form-data';
-import moment from 'moment';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -85,7 +84,7 @@ const Page = () => {
     }
 
     formData.append('notes', mealNotes);
-    formData.append('date', JSON.stringify(moment(date).format()));
+    formData.append('date', date.toISOString());
     formData.append('type', selectedMealType);
     formData.append('userId', userId);
 

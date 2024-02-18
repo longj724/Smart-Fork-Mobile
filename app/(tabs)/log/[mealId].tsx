@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { useRef, useState } from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import moment from 'moment';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useRouter } from 'expo-router';
@@ -25,7 +24,7 @@ const Page = () => {
   const router = useRouter();
   const { datetime, imageUrls, mealId, notes, type } = useLocalSearchParams();
   const imageUrlsArray = (imageUrls as string).split(',');
-  const datetimeAsDate = moment(datetime).toDate();
+  const datetimeAsDate = new Date(datetime as string);
 
   const [newMealNotes, setNewMealNotes] = useState(notes as string);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -81,13 +80,16 @@ const Page = () => {
           ),
         }}
       />
-      <View className="h-1/3 w-5/6 rounded-lg shadow-md bg-red-400 flex">
-        <Image
-          source={{ uri: imageUrlsArray[0] }}
-          className=" flex-1 rounded-sm"
-          resizeMode="cover"
-        />
-      </View>
+      {imageUrls.length > 0 && (
+        <View className="h-1/3 w-5/6 rounded-lg shadow-md bg-red-400 flex">
+          <Image
+            source={{ uri: imageUrlsArray[0] }}
+            className=" flex-1 rounded-sm"
+            resizeMode="cover"
+          />
+        </View>
+      )}
+
       <View className="border-black-500 mt-8 rounded-md border-2 w-5/6 ">
         <TextInput
           editable

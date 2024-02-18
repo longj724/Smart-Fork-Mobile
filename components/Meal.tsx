@@ -10,9 +10,14 @@ import {
 } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { DateTime } from 'luxon';
 
+// Relative Dependencies
+import { cn } from '@/utils/utils';
+
+// Interfaces
 interface MealProps {
-  datetime: Date;
+  datetime: DateTime;
   id: string;
   imageUrls: string[];
   notes: string | null;
@@ -35,8 +40,8 @@ const Meal = ({ datetime, id, imageUrls, notes, type }: MealProps) => {
   const [imageSize, setImageSize] = useState<ImageSize | null>(null);
 
   const getMealTime = () => {
-    let hours = datetime.getHours();
-    const minutes = datetime.getMinutes();
+    let hours = datetime.toObject().hour as number;
+    const minutes = datetime.toObject().minute as number;
     const ampm = hours >= 12 ? 'pm' : 'am';
     hours = hours % 12;
     hours = hours ? hours : 12;
@@ -84,7 +89,7 @@ const Meal = ({ datetime, id, imageUrls, notes, type }: MealProps) => {
         router.push({
           pathname: `/log/${id}`,
           params: {
-            datetime: datetime.toISOString(),
+            datetime: datetime.toJSDate().toISOString(),
             id,
             imageUrls,
             notes: notes ?? '',
@@ -94,7 +99,12 @@ const Meal = ({ datetime, id, imageUrls, notes, type }: MealProps) => {
       }
     >
       <View className="mt-4 flex flex-row rounded-lg bg-white shadow-md">
-        <View className="w-4/6 flex-col p-2">
+        <View
+          className={cn(
+            'flex-col p-2',
+            imageUrls.length > 0 ? 'w-4/6' : 'w-full'
+          )}
+        >
           <View className="flex flex-row items-center pl-3">
             <Text className="flex-shrink text-lg font-semibold">
               {getMealTime()} {type && `- ${type}`}
@@ -120,7 +130,7 @@ const Meal = ({ datetime, id, imageUrls, notes, type }: MealProps) => {
             )}
           </View>
         </View>
-        {imageUrls?.length && (
+        {imageUrls?.length > 0 && (
           <View className="flex flex-1 items-center p-4">
             <Image
               source={{ uri: imageUrls[0] }}
