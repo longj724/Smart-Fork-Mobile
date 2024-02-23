@@ -20,6 +20,7 @@ import { useRouter } from 'expo-router';
 import Meal from '@/components/Meal';
 import { IMealData } from '../../../types/types';
 import { useAllMealsQuery } from '@/hooks/useAllMealsQuery';
+import ConnectWorkout from '@/components/ConnectWorkout';
 
 const Page = () => {
   const { userId } = useAuth();
@@ -67,6 +68,37 @@ const Page = () => {
       yesterday.setDate(yesterday.getDate() - 1);
       return yesterday;
     });
+  };
+
+  const displayMeals = () => {
+    const filteredData = data
+      ?.filter(
+        ({ datetime }: IMealData) =>
+          new Date(datetime).getDate() == selectedDate.getDate()
+      )
+      .sort(
+        (meal1: IMealData, meal2: IMealData) =>
+          new Date(meal1.datetime).getTime() -
+          new Date(meal2.datetime).getTime()
+      );
+
+    if (filteredData && filteredData?.length > 0) {
+      return filteredData.map((meal: IMealData) => (
+        <Meal
+          id={meal.id.toString()}
+          key={meal.datetime.toString()}
+          datetime={DateTime.fromISO(meal.datetime)}
+          notes={meal?.notes}
+          type={meal.type}
+          imageUrls={meal?.imageUrls ?? []}
+        />
+      ));
+    }
+    return (
+      <View className="p-3 mb-2 flex flex-row rounded-lg bg-white shadow-md">
+        <Text>No meals from today added</Text>
+      </View>
+    );
   };
 
   return (
@@ -135,28 +167,10 @@ const Page = () => {
         </Modal>
       )}
       <ScrollView className="pl-4 pr-4 pb-20 bg-gray-200">
-        {data
-          ?.filter(
-            ({ datetime }: IMealData) =>
-              new Date(datetime).getDate() == selectedDate.getDate()
-          )
-          .sort(
-            (meal1: IMealData, meal2: IMealData) =>
-              new Date(meal1.datetime).getTime() -
-              new Date(meal2.datetime).getTime()
-          )
-          .map((meal: IMealData) => {
-            return (
-              <Meal
-                id={meal.id.toString()}
-                key={meal.datetime.toString()}
-                datetime={DateTime.fromISO(meal.datetime)}
-                notes={meal?.notes}
-                type={meal.type}
-                imageUrls={meal?.imageUrls ?? []}
-              />
-            );
-          })}
+        <Text className="text-lg font-bold my-2">Meals</Text>
+        {displayMeals()}
+        <Text className="text-lg font-bold mb-2">Workouts</Text>
+        <ConnectWorkout selectedDate={selectedDate} />
         <View className="h-10 bg-gray-200"></View>
       </ScrollView>
     </SafeAreaView>

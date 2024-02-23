@@ -98,7 +98,7 @@ const Meal = ({ datetime, id, imageUrls, notes, type }: MealProps) => {
         })
       }
     >
-      <View className="mt-4 flex flex-row rounded-lg bg-white shadow-md">
+      <View className="mb-4 flex flex-row rounded-lg bg-white shadow-md">
         <View
           className={cn(
             'flex-col p-2',

@@ -24,3 +24,25 @@ export interface IMessage {
   role: string;
   content: string;
 }
+
+export interface IStravaRefreshTokenRequest {
+  code: string;
+  clientId: string;
+  clientSecret: string;
+  grantType: string;
+  userId: string;
+}
+
+export interface IStravaData {
+  userConnected: boolean;
+  activityData: Array<IStravaActivityData>;
+}
+
+export interface IStravaActivityData {
+  startDateLocal: string;
+  name: string;
+  sportType: string;
+  movingTime: number;
+  distance: number;
+  totalElevationGain: number;
+}
