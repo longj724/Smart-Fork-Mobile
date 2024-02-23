@@ -7,6 +7,8 @@ import {
   ScrollView,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
+  Keyboard,
   View,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -114,8 +116,7 @@ const Page = () => {
   }
 
   return (
-    <>
-      <SafeAreaView />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View className="p-4 flex flex-col">
         <Pressable
           onPress={pickImageAsync}
@@ -160,7 +161,12 @@ const Page = () => {
           />
         </View>
         <View className="border-black-500 mt-8 h-10 rounded-md border-2">
-          <Pressable onPress={toggleDatePicker}>
+          <Pressable
+            onPress={() => {
+              Keyboard.dismiss();
+              toggleDatePicker();
+            }}
+          >
             <View className="flex w-full flex-row items-center justify-between p-2">
               <Ionicons name="calendar-outline" size={20} />
               <TextInput
@@ -190,7 +196,10 @@ const Page = () => {
         </View>
         <View className="border-black-500 mt-8 rounded-md border-2">
           <Pressable
-            onPress={() => setShowMealTypeDropdown(!showMealTypeDropdown)}
+            onPress={() => {
+              Keyboard.dismiss();
+              setShowMealTypeDropdown(!showMealTypeDropdown);
+            }}
           >
             <View className="flex w-full flex-row items-center justify-between p-2">
               <Ionicons name="fast-food-outline" size={20} />
@@ -235,7 +244,7 @@ const Page = () => {
           </Pressable>
         </View>
       </View>
-    </>
+    </TouchableWithoutFeedback>
   );
 };
 
