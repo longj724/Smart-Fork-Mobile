@@ -1,6 +1,6 @@
 // External Dependencies
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 
 const TabsLayout = () => {
   return (
@@ -20,7 +20,7 @@ const TabsLayout = () => {
         name="addMeal"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-outline" color={color} size={size} />
+            <AntDesign name="pluscircle" color={color} size={size} />
           ),
           tabBarLabel: 'Log Meal',
           tabBarActiveTintColor: '#15803D',
