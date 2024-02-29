@@ -1,8 +1,8 @@
 // External Dependencies
-import { View, Text, TextInput, Pressable } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet } from 'react-native';
-import { useOAuth } from '@clerk/clerk-expo';
+import { useOAuth, useSignIn } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 
 // Relative Dependencies
@@ -15,7 +15,10 @@ enum Strategy {
 }
 
 const Page = () => {
+  const { signIn, setActive, isLoaded } = useSignIn();
   useWarmUpBrowser();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const router = useRouter();
   const { startOAuthFlow: googleAuth } = useOAuth({ strategy: 'oauth_google' });
@@ -43,20 +46,41 @@ const Page = () => {
     }
   };
 
+  const onSignIn = async () => {
+    if (!isLoaded) {
+      return;
+    }
+    try {
+      const completeSignIn = await signIn.create({
+        identifier: email,
+        password,
+      });
+
+      await setActive({ session: completeSignIn.createdSessionId });
+      router.back();
+    } catch (err: any) {
+      console.error(JSON.stringify(err, null, 2));
+    }
+  };
+
   return (
     <View style={stylesheet.container}>
       <TextInput
         style={[stylesheet.inputField, { marginBottom: 20 }]}
         autoCapitalize="none"
         placeholder="Email"
+        value={email}
+        onChangeText={(newEmail) => setEmail(newEmail)}
       />
       <TextInput
         secureTextEntry={true}
         style={[stylesheet.inputField, { marginBottom: 30 }]}
         autoCapitalize="none"
         placeholder="Password"
+        value={password}
+        onChangeText={(newPassword) => setPassword(newPassword)}
       />
-      <Pressable style={stylesheet.btn}>
+      <Pressable style={stylesheet.btn} onPress={onSignIn}>
         <Text style={stylesheet.btnText}>Sign In</Text>
       </Pressable>
 
@@ -134,7 +158,7 @@ const stylesheet = StyleSheet.create({
     backgroundColor: '#fff',
   },
   btn: {
-    backgroundColor: '#FF385C',
+    backgroundColor: '#15803D',
     height: 50,
     borderRadius: 8,
     justifyContent: 'center',
