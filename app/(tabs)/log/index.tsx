@@ -109,35 +109,35 @@ const Page = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="flex h-16 flex-row items-center justify-evenly bg-green-700 z-10">
+      <View className="flex h-16 flex-row items-center justify-evenly bg-white z-10">
         <Feather
           name="mic"
           size={24}
           style={{ marginRight: 50 }}
           onPress={quickAdd}
-          color="white"
+          color="#15803D"
         />
         <View className="flex flex-row justify-center gap-2">
           <Pressable
-            className="h-8 w-8 items-center justify-center rounded-sm bg-white"
+            className="h-8 w-8 items-center justify-center rounded-sm bg-green-700"
             onPress={moveBackwardOneDay}
           >
-            <Ionicons name="arrow-back-outline" color="black" size={16} />
+            <Ionicons name="arrow-back-outline" color="white" size={16} />
           </Pressable>
           <Pressable
-            className="flex w-28 flex-row items-center justify-center gap-1 rounded-sm bg-white"
+            className="flex w-28 flex-row items-center justify-center gap-1 rounded-sm bg-green-700"
             onPress={toggleDatePicker}
           >
-            <Text className="font-semibold text-black">
+            <Text className="font-semibold text-white">
               {displayDayInHeader()}
             </Text>
-            <Ionicons name="caret-down-outline" color="black" />
+            <Ionicons name="caret-down-outline" color="white" />
           </Pressable>
           <Pressable
-            className="h-8 w-8 items-center justify-center rounded-sm bg-white"
+            className="h-8 w-8 items-center justify-center rounded-sm bg-green-700"
             onPress={moveForwardOneDay}
           >
-            <Ionicons name="arrow-forward-outline" color="black" size={16} />
+            <Ionicons name="arrow-forward-outline" color="white" size={16} />
           </Pressable>
         </View>
         <View className="relative">
@@ -145,7 +145,7 @@ const Page = () => {
             name="dots-three-horizontal"
             size={24}
             style={{ marginLeft: 50 }}
-            color="white"
+            color="#15803D"
             onPress={() => setViewExtensionsMenu(!viewExtensionsMenu)}
           />
           {viewExtensionsMenu && (
