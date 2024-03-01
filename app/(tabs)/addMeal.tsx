@@ -2,13 +2,12 @@
 import {
   Animated,
   FlatList,
+  Keyboard,
   Pressable,
-  SafeAreaView,
   ScrollView,
   Text,
   TextInput,
   TouchableWithoutFeedback,
-  Keyboard,
   View,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -26,6 +25,7 @@ import { IMealTypeSelectData } from '@/types/types';
 import { mealTypeSelectData } from '@/utils/utils';
 import { useLogMealMutation } from '@/hooks/useLogMealMutation';
 import LoadingIndicator from '@/components/LoadingIndicator';
+import Rating from '@/components/Rating';
 
 const Page = () => {
   const { userId } = useAuth();
@@ -42,6 +42,7 @@ const Page = () => {
   >(null);
   const [showMealTypeDropdown, setShowMealTypeDropdown] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState('Breakfast');
+  const [selectedRating, setSelectedRating] = useState(5);
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
@@ -63,8 +64,7 @@ const Page = () => {
   const deleteImage = (uri: string) => {
     setSelectedImages((images) => {
       if (images !== null) {
-        const newImages = images?.filter((img) => img.uri != uri);
-        return newImages;
+        return images?.filter((img) => img.uri != uri);
       }
       return images;
     });
@@ -74,20 +74,19 @@ const Page = () => {
     const formData = new FormData();
 
     if (selectedImages) {
-      selectedImages.forEach(
-        (image: ImagePicker.ImagePickerAsset, index: number) => {
-          formData.append('images', {
-            uri: image.uri,
-            name: image.fileName,
-            type: image.type,
-          });
-        }
-      );
+      selectedImages.forEach((image: ImagePicker.ImagePickerAsset) => {
+        formData.append('images', {
+          uri: image.uri,
+          name: image.fileName,
+          type: image.type,
+        });
+      });
     }
 
     formData.append('notes', mealNotes);
     formData.append('date', date.toISOString());
     formData.append('type', selectedMealType);
+    formData.append('rating', selectedRating);
     formData.append('userId', userId);
 
     logMealMutation.mutate(formData, {
@@ -111,6 +110,10 @@ const Page = () => {
     }).start(() => setShowMealTypeDropdown(false));
   };
 
+  const onRatingSelected = (rating: number) => {
+    setSelectedRating(rating);
+  };
+
   if (logMealMutation.isPending) {
     return <LoadingIndicator />;
   }
@@ -119,8 +122,9 @@ const Page = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View className="p-4 flex flex-col">
         <Pressable
-          onPress={pickImageAsync}
+          className="bg-white"
           disabled={selectedImages?.length === 3}
+          onPress={pickImageAsync}
         >
           <View className="flex w-full items-center justify-center border-2 border-dashed border-gray-400 p-6">
             <View className="flex-column flex items-center">
@@ -148,7 +152,7 @@ const Page = () => {
             className="mt-2"
           />
         )}
-        <View className="border-black-500 mt-8 rounded-md border-2">
+        <View className="border-black-500 mt-8 rounded-md border-2 bg-white">
           <TextInput
             editable
             multiline
@@ -160,7 +164,7 @@ const Page = () => {
             placeholder="Add notes about what you ate, how you felt, etc."
           />
         </View>
-        <View className="border-black-500 mt-8 h-10 rounded-md border-2">
+        <View className="border-black-500 mt-8 h-10 rounded-md border-2 bg-white">
           <Pressable
             onPress={() => {
               Keyboard.dismiss();
@@ -194,7 +198,7 @@ const Page = () => {
             />
           </Pressable>
         </View>
-        <View className="border-black-500 mt-8 rounded-md border-2">
+        <View className="border-black-500 mt-8 rounded-md border-2 bg-white">
           <Pressable
             onPress={() => {
               Keyboard.dismiss();
@@ -217,7 +221,7 @@ const Page = () => {
                     ({ value }: IMealTypeSelectData) =>
                       value !== selectedMealType
                   )
-                  .map(({ key, value }: IMealTypeSelectData, index: number) => (
+                  .map(({ key, value }: IMealTypeSelectData) => (
                     <Pressable
                       className="flex flex-row justify-center p-2"
                       key={key}
@@ -232,6 +236,13 @@ const Page = () => {
               </ScrollView>
             </Animated.View>
           )}
+        </View>
+        <View className="items-center justify-center h-24 w-full bg-white rounded-lg mt-8 shadow-md">
+          <Text className="mb-2">How did the meal make you feel?</Text>
+          <Rating
+            defaultRating={selectedRating}
+            onRatingSelected={onRatingSelected}
+          />
         </View>
         <View className="mt-10">
           <Pressable

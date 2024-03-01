@@ -111,7 +111,7 @@ const ConnectWorkout = ({ selectedDate }: IConnectWorkoutProps) => {
         </View>
       ) : (
         <View className="bg-white p-2 rounded-lg shadow-md flex flex-row items-center">
-          <Text className="text-md font-semibold mr-auto ml-2">
+          <Text className="text-md mr-auto ml-2">
             Link Strava to view your activities
           </Text>
           <Pressable
