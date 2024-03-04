@@ -72,7 +72,10 @@ const ConnectWorkout = ({ selectedDate }: IConnectWorkoutProps) => {
 
     if (filteredWorkouts && filteredWorkouts.length > 0) {
       return filteredWorkouts.map((activity) => (
-        <View key={`${activity.name}+${activity.startDateLocal}`}>
+        <View
+          key={`${activity.name}+${activity.startDateLocal}`}
+          className="bg-white p-3 rounded-lg shadow-md flex flex-col justify-evenly"
+        >
           <Text className="text-md font-semibold">{activity.name}</Text>
           <View className="flex flex-row justify-evenly w-full mt-4">
             <View className="flex flex-col items-center">
@@ -106,9 +109,7 @@ const ConnectWorkout = ({ selectedDate }: IConnectWorkoutProps) => {
   return (
     <>
       {stravaData && stravaData?.userConnected ? (
-        <View className="bg-white p-3 rounded-lg shadow-md flex flex-col justify-evenly">
-          {displayWorkouts()}
-        </View>
+        <View className="flex flex-col gap-2">{displayWorkouts()}</View>
       ) : (
         <View className="bg-white p-2 rounded-lg shadow-md flex flex-row items-center">
           <Text className="text-md mr-auto ml-2">
