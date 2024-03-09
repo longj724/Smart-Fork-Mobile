@@ -103,7 +103,11 @@ const ConnectWorkout = ({ selectedDate }: IConnectWorkoutProps) => {
         </View>
       ));
     }
-    return <Text>No workouts from today found</Text>;
+    return (
+      <View className="bg-white p-3 rounded-lg shadow-md flex flex-col justify-evenly">
+        <Text>No workouts from today found</Text>
+      </View>
+    );
   };
 
   return (
